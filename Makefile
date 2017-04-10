@@ -18,8 +18,8 @@ test_mpi_ghost_matrix : test_mpi_ghost_matrix.c mpi_ghost_matrix.o matrix.o
 mpi_ghost_matrix.o : mpi_ghost_matrix.c matrix.o
 	$(CC) -c -D _ERROR_CHECKING_ON_ -std=c99 mpi_ghost_matrix.c matrix.o
 
-matrix.o : ../C_Matrix/C_MATRIX/matrix.c
-	$(CC) -c -std=c99 -D _ERROR_CHECKING_ON_ ../C_Matrix/C_MATRIX/matrix.c
+matrix.o : ../../C_Matrix/C_MATRIX/matrix.c
+	$(CC) -c -std=c99 -D _ERROR_CHECKING_ON_ ../../C_Matrix/C_MATRIX/matrix.c
 
 	#test_midterm_matrix : test_midterm_matrix.c midterm_matrix.o midterm_error.o midterm_constants.o
 #	$(CC) $(CFLAGS) -o test_midterm_matrix test_midterm_matrix.c midterm_matrix.o midterm_error.o midterm_constants.o  -lpopt -lm

@@ -48,7 +48,7 @@
 #include <math.h>
 
 #include "mpi_ghost_matrix.h"
-#include "../C_Matrix/C_MATRIX/matrix.h"
+#include "../../C_Matrix/C_MATRIX/matrix.h"
 
 #ifdef _MPI_H_
 #include "mpi.h"
@@ -87,13 +87,13 @@ static inline int _getColsCore(const ghost_matrix * gmat){
 }
 
 static inline void _printFloat(void * val){
-  double val2 = *(double *) val;
-  printf("%6lf\t",val2);
+  float val2 = *(float *) val;
+  printf("%6f\t",val2);
 }
 
 static inline void _printInt(void * val){
-  int val2 = *(int *) val;
-  printf("%3d\t",val2);
+  float val2 = *(float *) val;
+  printf("%3d\t",(int)val2);
 }
 
 static inline void _printCycle(const int row_start      ,
@@ -108,7 +108,8 @@ static inline void _printCycle(const int row_start      ,
 		for(int c=col_start;c<col_end;c++){
       float elem;
       getElemMatrix(gmat->mat,r,c,&elem);
-      fun(&elem);
+      float * elem2 = &elem;
+      fun((void *)elem2);
 		}
 		printf("\n");
 	}
@@ -124,8 +125,8 @@ static inline ghost_matrix * _newGM(const int core_rows	     ,
 {
 
   // Step 1 Calculate full dimensions of the matrix
-  const int total_rows = core_rows+ghost_row_north+ghost_row_south;
-  const int total_cols = core_cols+ghost_col_east +ghost_col_west ;
+  const int total_rows = core_rows + ghost_row_north + ghost_row_south;
+  const int total_cols = core_cols + ghost_col_east  + ghost_col_west ;
 
   // Step 2 Allocate memory for the ghost_matrix container data structure
   ghost_matrix * gmat = (ghost_matrix *) malloc(sizeof(struct _ghost_matrix));
@@ -522,6 +523,7 @@ int setElemCoreGhostMatrix(ghost_matrix * gmat,
   setElemMatrix(gmat->mat,r+gmat->row_start,c+gmat->col_start,val);
 	return 0;
 }
+
 /* Getters                                                                    */
 int getRowStartGhostMatrix(const ghost_matrix * gmat){
 	#ifdef _ERROR_CHECKING_ON_
@@ -661,7 +663,7 @@ int getRowsSouthGhostMatrix(const ghost_matrix * gmat){
 		return _return_error_val();
 	}
 	#endif
-	return (getColsMatrix(gmat->mat)-gmat->row_end);
+	return (getRowsMatrix(gmat->mat)-gmat->row_end);
 }
 
 float getElemGhostMatrix(const ghost_matrix * gmat,const int r,const int c){

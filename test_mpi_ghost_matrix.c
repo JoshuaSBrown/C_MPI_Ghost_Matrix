@@ -29,7 +29,6 @@
 #include "mpi.h"
 #endif
 #include "mpi_ghost_matrix.h"
-#include "../C_Matrix/C_MATRIX/matrix.h"
 
 int main(void){
 
@@ -52,6 +51,274 @@ int main(void){
 	rv = deleteGhostMatrix(&gmat);
 	assert(rv==0);
 
+	printf("Testing: newGhostMatrixRowPanel\n");
+	gmat = newGhostMatrixRowPanel(0, 1, 0, 0);
+	assert(gmat==NULL);
+	gmat = newGhostMatrixRowPanel(1, 0, 0, 0);
+	assert(gmat==NULL);
+	gmat = newGhostMatrixRowPanel(1, 1, -1, 0);
+	assert(gmat==NULL);
+	gmat = newGhostMatrixRowPanel(1, 1, 0, -1);
+	assert(gmat==NULL);
+	gmat = newGhostMatrixRowPanel(1, 1, 0, 0);
+	assert(gmat!=NULL);
+	printf("Only Core gmatrix 1,1\n");
+	printGhostMatrix(gmat);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv == 0);
+	assert(gmat==NULL);
+	printf("Ghost row on the top of a 2,2 gmatrix\n");
+	gmat = newGhostMatrixRowPanel(2, 2, 1, 0);
+	assert(gmat!=NULL);
+	rv = printGhostMatrix(gmat);
+  assert(rv==0);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+	printf("Ghost row on the bottom of a 3,3 gmatrix\n");
+	gmat = newGhostMatrixRowPanel(3, 3, 0, 1);
+	assert(gmat!=NULL);
+	rv = printGhostMatrix(gmat);
+	assert(rv == 0);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+	printf("Ghost row above and below a 2,2 gmatrix\n");
+	gmat = newGhostMatrixRowPanel(2, 2, 1, 1);
+	assert(gmat!=NULL);
+	rv = printGhostMatrix(gmat);
+	assert(rv==0);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+
+	printf("Testing newGhostMatrixCheckerboard\n");
+	ghost_matrix * checker = newGhostMatrixCheckerboard(0,4,0,0,0,0);
+	assert(checker==NULL);
+	checker = newGhostMatrixCheckerboard(3,0,0,0,0,0);
+	assert(checker==NULL);
+	checker = newGhostMatrixCheckerboard(3,4,-1,0,0,0);
+	assert(checker==NULL);
+	checker = newGhostMatrixCheckerboard(3,4,0,-1,0,0);
+	assert(checker==NULL);
+	checker = newGhostMatrixCheckerboard(3,4,0,0,-1,0);
+	assert(checker==NULL);
+	checker = newGhostMatrixCheckerboard(3,4,0,0,0,-1);
+	assert(checker==NULL);
+	checker = newGhostMatrixCheckerboard(3,4,0,0,0,0);
+	assert(checker!=NULL);
+	rv = printGhostMatrix(checker);
+	assert(rv==0);
+	rv = deleteGhostMatrix(&checker);
+	assert(rv==0);
+	assert(checker==NULL);
+
+	printf("Testing: printCompGhostMatrix\n");
+	gmat = newGhostMatrix(3,3);
+	rv = printCompGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = printCompGhostMatrix(gmat);
+	assert(rv==0);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+/* Testing Setters                                                            */
+	printf("Testing: setElemGhostMatrix\n");
+	gmat = newGhostMatrixRowPanel(3, 2, 1, 1);
+	assert(gmat!=NULL);
+	printCompGhostMatrix(gmat);
+	rv = setElemGhostMatrix(NULL,0,0,2.0);
+	assert(rv==-1);
+	rv = setElemGhostMatrix(gmat, -1,0,2.0);
+	assert(rv==-1);
+	rv = setElemGhostMatrix(gmat, 0,-1,2.0);
+	assert(rv==-1);
+	rv = setElemGhostMatrix(gmat, 0, 0,2.0);
+	assert(rv==0);
+	printCompGhostMatrix(gmat);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: setAllGhostMatrix");
+	gmat = newGhostMatrixCheckerboard(3,4,1,1,1,1);
+	assert(gmat!=NULL);
+	printGhostMatrix(gmat);
+	rv = setAllGhostMatrix(NULL,3.0);
+	assert(rv==-1);
+	printGhostMatrix(gmat);
+	rv = setAllGhostMatrix(gmat,3.5);
+	assert(rv==0);
+	printCompGhostMatrix(gmat);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: setElemCoreGhostMatrix\n");
+	gmat = newGhostMatrixRowPanel(3, 2, 1, 1);
+	assert(gmat!=NULL);
+	printCompGhostMatrix(gmat);
+	rv = setElemCoreGhostMatrix(NULL,0,0,2.0);
+	assert(rv==-1);
+	rv = setElemCoreGhostMatrix(gmat, -1,0,2.0);
+	assert(rv==-1);
+	rv = setElemCoreGhostMatrix(gmat, 0,-1,2.0);
+	assert(rv==-1);
+	rv = setElemCoreGhostMatrix(gmat, 0, 0,2.0);
+	assert(rv==0);
+	printCompGhostMatrix(gmat);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+/* Getters                                                                    */
+	printf("Testing: getRowStartGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(3,4,1,1,1,1);
+	rv = getRowStartGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getRowStartGhostMatrix(gmat);
+	assert(rv==1);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getRowEndGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(3,4,1,1,1,1);
+	rv = getRowEndGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getRowEndGhostMatrix(gmat);
+	assert(rv==4);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getRowsGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(3,4,1,1,1,1);
+	rv = getRowsGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getRowsGhostMatrix(gmat);
+	assert(rv==5);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getColStartGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(3,4,1,1,1,1);
+	rv = getColStartGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getColStartGhostMatrix(gmat);
+	assert(rv==1);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getColEndGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(3,4,1,1,1,1);
+	rv = getColEndGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getColEndGhostMatrix(gmat);
+	assert(rv==5);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getColsGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(3,4,1,1,1,1);
+	rv = getColsGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getColsGhostMatrix(gmat);
+	assert(rv==6);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getTotalGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(3,4,1,1,1,1);
+	rv = getTotalGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getTotalGhostMatrix(gmat);
+	assert(rv==30);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getRowsCoreGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(3,4,1,1,1,1);
+	rv = getRowsCoreGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getRowsCoreGhostMatrix(gmat);
+	assert(rv==3);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getColsCoreGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(3,4,1,1,1,1);
+	rv = getColsCoreGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getColsCoreGhostMatrix(gmat);
+	assert(rv==4);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getTotalCoreGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(3,4,1,1,1,1);
+	rv = getTotalCoreGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getTotalCoreGhostMatrix(gmat);
+	assert(rv==12);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getColsWestGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(5,5,1,2,3,4);
+	rv = getColsWestGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getColsWestGhostMatrix(gmat);
+	assert(rv==4);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getColsEastGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(5,5,1,2,3,4);
+	rv = getColsEastGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getColsEastGhostMatrix(gmat);
+	assert(rv==3);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getRowsSouthGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(5,5,1,2,3,4);
+	rv = getRowsSouthGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getRowsSouthGhostMatrix(gmat);
+	assert(rv==2);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: getRowsNorthGhostMatrix\n");
+	gmat = newGhostMatrixCheckerboard(5,5,1,2,3,4);
+	rv = getRowsNorthGhostMatrix(NULL);
+	assert(rv==-1);
+	rv = getRowsNorthGhostMatrix(gmat);
+	assert(rv==1);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+//	printf("Testing: get_cols_core_matrix\n");
+//	rv = get_cols_core_matrix(NULL);
+//	assert(rv==-1);
+//	rv = get_cols_core_matrix(mat);
+//	assert(rv==2);
+
 //	mat = new_matrix(2,3);
 //	assert(mat!=NULL);
 //	printf("Testing: get_rows\n");
@@ -73,72 +340,11 @@ int main(void){
 //	assert(rv==(2*3));
 //	delete_matrix(&mat);
 //
-//	printf("Testing: new_matrix_row_panel\n");
-//	mat = new_matrix_row_panel(0, 1, 0, 0);
-//	assert(mat==NULL);
-//	mat = new_matrix_row_panel(1, 0, 0, 0);
-//	assert(mat==NULL);
-//	mat = new_matrix_row_panel(1, 1, -1, 0);
-//	assert(mat==NULL);
-//	mat = new_matrix_row_panel(1, 1, 0, -1);
-//	assert(mat==NULL);
-//	mat = new_matrix_row_panel(1, 1, 0, 0);
-//	assert(mat!=NULL);
-//	printf("Only Core matrix 1,1\n");
-//	print_matrix(mat);
-//	rv = delete_matrix(&mat);
-//	assert(rv == 0);
-//	assert(mat==NULL);
-//	printf("Ghost row on the top of a 2,2 matrix\n");
-//	mat = new_matrix_row_panel(2, 2, 1, 0);
-//	assert(mat!=NULL);
-//	rv = print_matrix(mat);
-//	assert(rv==0);
-//	rv = delete_matrix(&mat);
-//	assert(rv==0);
-//	assert(mat==NULL);
-//	printf("Ghost row on the bottom of a 3,3 matrix\n");
-//	mat = new_matrix_row_panel(3, 3, 0, 1);
-//	assert(mat!=NULL);
-//	rv = print_matrix(mat);
-//	assert(rv == 0);
-//	rv = delete_matrix(&mat);
-//	assert(rv==0);
-//	assert(mat==NULL);
-//	printf("Ghost row above and below a 2,2 matrix\n");
-//	mat = new_matrix_row_panel(2, 2, 1, 1);
-//	assert(mat!=NULL);
-//	rv = print_matrix(mat);
-//	assert(rv==0);
-//	rv = delete_matrix(&mat);
-//	assert(rv==0);
-//	assert(mat==NULL);
-//
-//	printf("Testing: set_elem_core_matrix & get_elem_core_matrix\n");
-//	mat = new_matrix_row_panel(3, 2, 1, 1);
-//	assert(mat!=NULL);
-//	print_matrix(mat);
-//	rv = set_elem_core_matrix(NULL,0,0,2.0);
-//	assert(rv==-1);
-//	rv = set_elem_core_matrix(mat, -1,0,2.0);
-//	assert(rv==-1);
-//	rv = set_elem_core_matrix(mat, 0,-1,2.0);
-//	assert(rv==-1);
-//	rv = set_elem_core_matrix(mat, 0, 0,2.0);
-//	assert(rv==0);
-//
+
+
 //	rvd = get_elem_core_matrix(mat, 0, 0);
 //	assert(rvd==2.0);
-//
-//	rv = set_elem_core_matrix(mat, 3, 1, 3.0);
-//	assert(rv==-1);
-//	rv = set_elem_core_matrix(mat, 2, 2, 5.0);
-//	assert(rv==-1);
-//	rv = set_elem_core_matrix(mat, 2, 1, 8.0);
-//	assert(rv==0);
-//	rvd = get_elem_core_matrix(mat, 2, 1);
-//	assert(rvd==8.0);
-//
+
 //	rvd = get_elem_core_matrix(NULL, 2, 1);
 //	assert(rvd==-1.0);
 //	rvd = get_elem_core_matrix(mat, 3,1);
@@ -225,17 +431,7 @@ int main(void){
 //	assert(rvd==84);
 //	print_matrix(mat);
 //
-//	printf("Testing: get_rows_core_matrix\n");
-//	rv = get_rows_core_matrix(NULL);
-//	assert(rv==-1);
-//	rv = get_rows_core_matrix(mat);
-//	assert(rv==3);
-//
-//	printf("Testing: get_cols_core_matrix\n");
-//	rv = get_cols_core_matrix(NULL);
-//	assert(rv==-1);
-//	rv = get_cols_core_matrix(mat);
-//	assert(rv==2);
+
 //
 //	printf("Testing: sum_all_core_matrix_elems\n");
 //	rvd = sum_all_core_matrix_elems(NULL);
@@ -264,25 +460,7 @@ int main(void){
 //	delete_matrix(&mat);
 //	delete_matrix(&new_mat);
 //
-//	printf("Testing new_matrix_checkerboard_elem\n");
-//	checker = new_matrix_checkerboard_elem(0,4,0,0,0,0);
-//	assert(checker==NULL);
-//	checker = new_matrix_checkerboard_elem(3,0,0,0,0,0);
-//	assert(checker==NULL);
-//	checker = new_matrix_checkerboard_elem(3,4,-1,0,0,0);
-//	assert(checker==NULL);
-//	checker = new_matrix_checkerboard_elem(3,4,0,-1,0,0);
-//	assert(checker==NULL);
-//	checker = new_matrix_checkerboard_elem(3,4,0,0,-1,0);
-//	assert(checker==NULL);
-//	checker = new_matrix_checkerboard_elem(3,4,0,0,0,-1);
-//	assert(checker==NULL);
-//	checker = new_matrix_checkerboard_elem(3,4,0,0,0,0);
-//	assert(checker!=NULL);
-//	assert(get_rows(checker)==3);
-//	assert(get_cols(checker)==4);
-//	assert(get_rows_core_matrix(checker)==3);
-//	assert(get_cols_core_matrix(checker)==4);
+
 //
 //	printf("Testing get_cols_left_ghost_matrix & get_cols_right_ghost_matrix\n");
 //	rv = get_cols_left_ghost_matrix(NULL);
