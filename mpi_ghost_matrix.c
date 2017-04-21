@@ -852,28 +852,29 @@ float getElemCoreGhostMatrix(const ghost_matrix * gmat,
   return val;
 }
 
-//float sumAllCoreMatrix(const ghost_matrix gmat){
-//
-//	#ifdef _ERROR_CHECKING_ON_
-//	if(gmat==NULL){
-//		fprintf(stderr,"ERROR gmat is NULL in sumAllCoreMatrix\n");
-//		return _return_error_val();
-//	}
-//	#endif
-//
-//	int i;
-//	int j;
-//	float sum;
-//	sum = 0;
-//	for(i=mat->row_start;i<mat->row_end;i++){
-//		for(j=mat->col_start;j<mat->col_end;j++){
-//			sum += ELEM(mat,i,j);
-//		}
-//	}
-//
-//	return sum;
-//}
-//
+float sumAllCoreMatrix(const ghost_matrix * gmat){
+
+	#ifdef _ERROR_CHECKING_ON_
+	if(gmat==NULL){
+		fprintf(stderr,"ERROR gmat is NULL in sumAllCoreMatrix\n");
+		return (float)_return_error_val();
+	}
+	#endif
+
+	int i;
+	int j;
+	float sum;
+	sum = 0;
+  printf("row_start %d, row_end %d, col_start %d col_end %d\n",gmat->row_start, gmat->row_end,gmat->col_start,gmat->col_end);
+  sumElemsMatrix(gmat->row_start,
+                 gmat->row_end-1,
+                 gmat->col_start,
+                 gmat->col_end-1,
+                 gmat->mat      ,
+                 &sum           );
+	return sum;
+}
+
 //int set_elem_top_row_ghost_matrix(matrix mat, int row, int col, float val){
 //
 //	#ifdef _ERROR_CHECKING_ON_

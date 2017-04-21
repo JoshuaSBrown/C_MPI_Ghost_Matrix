@@ -258,6 +258,11 @@ float getElemCoreGhostMatrix(const ghost_matrix * gmat,
                              const int row,
                              const int col);
 
+/* Grabs the sum of all the elements in the core matrix. Return value are:    *
+ * -1.0 - if an error                                                         *
+ * any value - if success should be the sum                                   */
+float sumAllCoreMatrix(const ghost_matrix * gmat);
+
 /* Find the total value of all of the elements in the core matrix and return  *
  * the value. Excludes elements in the ghost rows or columns.                 */
 //float getElemCoreGhostMatrix(const ghost_matrix * gmat,
