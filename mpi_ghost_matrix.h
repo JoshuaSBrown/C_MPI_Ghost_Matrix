@@ -168,64 +168,57 @@ int setAllGhostMatrix(ghost_matrix * gmat, const float val);
  * 0> - if success returns the row number                                     */
  int getRowStartGhostMatrix(const ghost_matrix * gmat);
 
-/* Gets the end row of the core matrix any row
- * of equal or greater value is part of the bottom
- * ghost row.                                   *
+/* Gets the end row of the core matrix any row of equal or greater value is   *
+ * part of the bottom ghost row:                                              *
  * -1 - if gmat is NULL                                                       *
  * 0> - if success returns the row number                                     */
 int getRowEndGhostMatrix(const ghost_matrix * gmat);
 
-/* Gets the col at the start of the core matrix
- * and value less than the column returned is part
- * of the left ghost column.                     *
+/* Gets the col at the start of the core matrix and value less than the column*
+ * returned is part of the left ghost column.                                 *
  * -1  - if gmat is NULL                                                      *
  * 0>= - if success returns the col number                                    */
 int getColStartGhostMatrix(const ghost_matrix * gmat);
 
-/* Gets the col at the end of the core matrix any
- * column with a value greater or equal to the
- * value returned is part of the ghost column on
- * the right side of the core matrix.            *
+/* Gets the col at the end of the core matrix any column with a value greater *
+ * or equal to the value returned is part of the ghost column on the right    *
+ * side of the core matrix.                                                   *
  * -1  - if gmat is NULL                                                      *
  * 0>= - if success returns the col number                                    */
 int getColEndGhostMatrix(const ghost_matrix * gmat);
 
-/* Gets the total rows of the matrix including
- * rows in both top and bottom ghost matrices    *
+/* Gets the total rows of the matrix including rows in both top and bottom    *
+ * ghost matrices                                                             *
  * -1  - if gmat is NULL                                                      *
  * 0>  - if success returns the number or rows in the ghost_matrix            */
 int getRowsGhostMatrix(const ghost_matrix * gmat);
 
-/* Gets the total columns of the matrix including
- * columns in both the left and right ghost
- * columns.                                      *
+/* Gets the total columns of the matrix including columns in both the left and*
+ * right ghost columns.                                                       *
  * -1  - if gmat is NULL                                                      *
  * 0>  - if success returns the number or columns in the ghost_matrix         */
 int getColsGhostMatrix(const ghost_matrix * gmat);
 
-/* Gets the total number of elements in the matrix
- * including ghost columns and rows.             *
+/* Gets the total number of elements in the matrix including ghost columns and*
+ * rows.                                                                      *
  * -1  - if gmat is NULL                                                      *
  * 0>  - if success returns the number or elements in the ghost_matrix        */
 int getTotalGhostMatrix(const ghost_matrix * gmat);
 
-/* Gets the total number of rows in the core
- * matrix                                        *
+/* Gets the total number of rows in the core matrix                           *
  * -1  - if gmat is NULL                                                      *
  * 0>  - if success returns the number or rows in the core part of the        *
  *       ghost_matrix                                                         */
 int getRowsCoreGhostMatrix(const ghost_matrix * gmat);
 
-/* Gets the total number of cols in the core
- * matrix                                       *
+/* Gets the total number of cols in the core matrix                           *
  * -1  - if gmat is NULL                                                      *
  * 0>  - if success returns the number or columns in the core part of the     *
  *       ghost_matrix                                                         */
 int getColsCoreGhostMatrix(const ghost_matrix * gmat);
 
-/* Determines the total number of elements in the
- * core matrix. Excludes elements located in the
- * ghost rows and columns.                       *
+/* Determines the total number of elements in the core matrix. Excludes       *
+ * elements located in the ghost rows and columns.                            *
  * -1  - if gmat is NULL                                                      *
  * 0>  - if success returns the number or elements in the core part of the    *
  *       ghost_matrix                                                         */
@@ -239,18 +232,16 @@ int getRowsNorthGhostMatrix(const ghost_matrix * gmat);
 
 int getRowsSouthGhostMatrix(const ghost_matrix * gmat);
 
-/* Grab the element located in the global matrix
- * or full matrix this includes both the core
- * matrix and the ghost matrices that pad the
- * sides if any exists. The row and col refer to
- * the position within this full matrix.         */
+/* Grab the element located in the global matrix or full matrix this includes *
+ * both the core matrix and the ghost matrices that pad the sides if any      *
+ * exists. The row and col refer the position within this full matrix.        */
 float getElemGhostMatrix(const ghost_matrix * gmat, const int r, const int c);
 
-/* Copies the elements between and including
- * start_row to end_row
- * start_col to end_col
- * to a separate matrix the values are placed in
- * the new matrix starting at row and col (0,0) */
+/* Copies the elements between and including                                  *
+ * start_row to end_row                                                       *
+ * start_col to end_col                                                       *
+ * to a separate matrix the values are placed in the new matrix starting at   *
+ * row and col (0,0)                                                          */
 int copyGhostMatrix  (const int start_row_elem      ,
                       const int end_row_elem        ,
                       const int start_col_elem      ,
@@ -260,17 +251,19 @@ int copyGhostMatrix  (const int start_row_elem      ,
 
 
 
-///* Get an element from the core matrix this
-// * excludes any elements in the ghost. Here row
-// * and column refer to the rows and cols in the
-// * core matrix not the global matrix.            */
-//float get_elem_core_matrix(const_matrix mat, int row, int col);
-//
-///* Find the total value of all of the elements in
-// * the core matrix and return the value. Excludes
-// * elements in the ghost rows or columns.        */
-//float sum_all_core_matrix_elems(const_matrix mat);
-//
+/* Get an element from the core matrix this excludes any elements in the      *
+ * ghost. Here row and column refer to the rows and cols in the core matrix   *
+ * not the global matrix.                                                     */
+float getElemCoreGhostMatrix(const ghost_matrix * gmat,
+                             const int row,
+                             const int col);
+
+/* Find the total value of all of the elements in the core matrix and return  *
+ * the value. Excludes elements in the ghost rows or columns.                 */
+//float getElemCoreGhostMatrix(const ghost_matrix * gmat,
+//                             const int row            ,
+//                             const int col            );
+
 ///* Allows you to change an element in the top
 // * ghost row matrix. Here row and col refer to
 // * the rows and columns within the ghost matrix

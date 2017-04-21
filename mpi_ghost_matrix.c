@@ -817,41 +817,41 @@ int copyGhostMatrix(const int start_row_elem      ,
 	return 0;
 }
 
+float getElemCoreGhostMatrix(const ghost_matrix * gmat,
+                             const int row            ,
+                             const int col            )
+{
+	#ifdef _ERROR_CHECKING_ON_
+	if(gmat==NULL){
+		fprintf(stderr,"ERROR gmat is NULL in getElemCoreGhostMatrix\n");
+		return (float) _return_error_val();
+	}
+	if(row<0){
+		fprintf(stderr,"ERROR row is less than 0 in "
+                       "getElemCoreGhostMatrix\n");
+		return (float) _return_error_val();
+	}
+	if(col<0){
+		fprintf(stderr,"ERROR col is less than 0 in "
+                       "getElemCoreGhostMatrix\n");
+		return (float) _return_error_val();
+	}
+	if(row>=(gmat->row_end-gmat->row_start)){
+		fprintf(stderr,"ERROR row greater than rows in core matrix "
+                       "getElemCoreGhostMatrix\n");
+		return (float) _return_error_val();
+	}
+	if(col>=(gmat->col_end-gmat->col_start)){
+		fprintf(stderr,"ERROR col greater than cols in matrix "
+                       "getElemCoreGhostMatrix\n");
+		return (float) _return_error_val();
+	}
+	#endif
+  float val;
+	getElemMatrix(gmat->mat,row+gmat->row_start,col+gmat->col_start,&val);
+  return val;
+}
 
-//
-//float getElemCoreGhostMatrix(const ghost_matrix gmat,
-//                             const int row          ,
-//                             const int col          )
-//{
-//	#ifdef _ERROR_CHECKING_ON_
-//	if(gmat==NULL){
-//		fprintf(stderr,"ERROR gmat is NULL in getElemCoreGhostMatrix\n");
-//		return (float) _return_error_val();
-//	}
-//	if(row<0){
-//		fprintf(stderr,"ERROR row is less than 0 in "
-//                       "getElemCoreGhostMatrix\n");
-//		return (float) _return_error_val();
-//	}
-//	if(col<0){
-//		fprintf(stderr,"ERROR col is less than 0 in "
-//                       "getElemCoreGhostMatrix\n");
-//		return (float) _return_error_val();
-//	}
-//	if(row>=(gmat->row_end-gmat->row_start)){
-//		fprintf(stderr,"ERROR row greater than rows in core matrix "
-//                       "getElemCoreGhostMatrix\n");
-//		return (float) _return_error_val();
-//	}
-//	if(col>=(gmat->col_end-gmat->col_start)){
-//		fprintf(stderr,"ERROR col greater than cols in matrix "
-//                       "getElemCoreGhostMatrix\n");
-//		return (float) _return_error_val();
-//	}
-//	#endif
-//	return getElemMatrix(gmat->mat,row+gmat->row_start,col+gmat->col_start);
-//}
-//
 //float sumAllCoreMatrix(const ghost_matrix gmat){
 //
 //	#ifdef _ERROR_CHECKING_ON_
