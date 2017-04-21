@@ -96,6 +96,35 @@ static inline void _printInt(void * val){
   printf("%3d\t",(int)val2);
 }
 
+/* Copies elements from one matrix to the other while manipulating the        *
+ * elements as specified by the fun function pointer. The elements copied     *
+ * between the two matrices are specified with the row_start col_start and    *
+ * row_end and col_end arguments. The elements copied are inclusive of the end*
+ * elements.                                                                  */
+static inline void _manipulateElements(const int row_start           ,
+                                       const int row_end             ,
+                                       const int col_start           ,
+                                       const int col_end             ,
+                                       const ghost_matrix * gmat_orig,
+                                       ghost_matrix * gmat_man       ,
+                                       void * (*fun)(void *)       )
+{
+
+  for(int r=row_start;r<=row_end;r++){
+    for(int c=col_start;c<=col_end;c++){
+      float elem;
+      getElemMatrix(gmat_orig->mat,r,c,&elem);
+      float * elem2 = &elem;
+      elem2 = (float *)fun((void *)elem2);
+      setElemMatrix(gmat_man->mat,r,c,*elem2);
+    }
+  }
+
+}
+
+void * _Nothing(void * elem){
+  return elem;
+}
 static inline void _printCycle(const int row_start      ,
                                const int row_end        ,
                                const int col_start      ,
@@ -671,7 +700,7 @@ float getElemGhostMatrix(const ghost_matrix * gmat,const int r,const int c){
 	#ifdef _ERROR_CHECKING_ON_
 	if(gmat==NULL){
 		fprintf(stderr,"ERROR mat is NULL in getElemGhostMatrix\n");
-		return _return_error_val();
+		return (float)_return_error_val();
 	}
   #endif
 
@@ -681,21 +710,21 @@ float getElemGhostMatrix(const ghost_matrix * gmat,const int r,const int c){
   #ifdef _ERROR_CHECKING_ON_
 	if(r<0){
 		fprintf(stderr,"ERROR row is less than 0 in getElemGhostMatrix\n");
-		return _return_error_val();
+		return (float)_return_error_val();
 	}
 	if(c<0){
 		fprintf(stderr,"ERROR col is less than 0 in getElemGhostMatrix\n");
-		return _return_error_val();
+		return (float)_return_error_val();
 	}
 	if(r>=rows){
 		fprintf(stderr,"ERROR row greater than rows in matrix "
                    "getElemGhostMatrix\n");
-		return _return_error_val();
+		return (float)_return_error_val();
 	}
 	if(c>=cols){
 		fprintf(stderr,"ERROR col greater than cols in matrix "
                    "getElemGhostMatrix\n");
-		return _return_error_val();
+		return (float)_return_error_val();
 	}
 	#endif
 
@@ -708,86 +737,86 @@ float getElemGhostMatrix(const ghost_matrix * gmat,const int r,const int c){
 /* start_row, end_row, start_col and end_col can be any
  * value between and including 0 and row-1, col-1 of the
  * smallest of the two matrices */
-//int copyGhostMatrix(const int start_row_elem      ,
-//                    const int end_row_elem        ,
-//                    const int start_col_elem      ,
-//                    const int end_col_elem        ,
-//                    const ghost_matrix * gmat_orig,
-//                    ghost_matrix * gmat_copy      )
-//{
-//
-//	/* Add 1 because the elements at 0 are included */
-//	int col_length = end_col_elem-start_col_elem+1;
-//	int row_length = end_row_elem-start_row_elem+1;
-//
-//	#ifdef _ERROR_CHECKING_ON_
-//	if(gmat_copy == NULL){
-//		fprintf(stderr,"ERROR gmat_copy is NULL in copyGhostMatrix\n");
-//		return _return_error_val();
-//	}
-//	if(gmat_orig == NULL){
-//		fprintf(stderr,"ERROR gmat_orig is NULL in copyGhostMatrix\n");
-//		return _return_error_val();
-//	}
-//  #endif
-//
-//  int orig_rows = getRowsMatrix(gmat_orig->mat);
-//  int orig_cols = getColsMatrix(gmat_orig->mat);
-//
-//  int copy_rows = getRowsMatrix(gmat_copy->mat);
-//  int copy_cols = getColsMatrix(gmat_copy->mat);
-//
-//  #ifdef _ERROR_CHECKING_ON_
-//	if(start_row_elem>end_row_elem){
-//		fprintf(stderr,"ERROR start_row_elem is larger than end_row in "
-//                   "copyGhostMatrix\n");
-//		return _return_error_val();
-//	}
-//	if(start_col_elem>end_col_elem){
-//		fprintf(stderr,"ERROR start_col_elem larger than end_col in"
-//                   "copyGhostMatrix\n");
-//		return _return_error_val();
-//	}
-//	if(start_row_elem<0){
-//		fprintf(stderr,"ERROR start_row_elem is less than 0 in copyGhostMatrix\n");
-//		return _return_error_val();
-//	}
-//	if(end_row_elem>=orig_rows){
-//		fprintf(stderr,"ERROR end_row_elem  extends past the row length of the "
-//                   "original matrix in copyGhostMatrix\n");
-//		return _return_error_val();
-//	}
-//	if(row_length>copy_rows){
-//		fprintf(stderr,"ERROR rows to be copied extend past the row length of "
-//                   "gmat_copy in copyGhostMatrix\n");
-//		return _return_error_val();
-//	}
-//	if(start_col_elem<0){
-//		fprintf(stderr,"ERROR start_col_elem  is less than 0 in copyGhostMatrix\n");
-//		return _return_error_val();
-//	}
-//	if(end_col_elem>=orig_cols){
-//		fprintf(stderr,"ERROR end_col_elem  is larger than the column length of the"
-//                   " original matrix in copyGhostMatrix\n");
-//		return _return_error_val();
-//	}
-//	if(col_length>copy_cols){
-//		fprintf(stderr,"ERROR columns extend past the column length of mat_copy in "
-//                   "copyGhostMatrix\n");
-//		return _return_error_val();
-//	}
-//	#endif
-//
-//	for(i=0;i<row_length;i++){
-//		for(j=0;j<col_length;j++){
-//			val = ELEM(mat_orig,i+start_row_elem,j+start_col_elem);
-//			ELEM((*mat_copy),i,j) = val;
-//		}
-//	}
-//
-//	return 0;
-//}
-//
+int copyGhostMatrix(const int start_row_elem      ,
+                    const int end_row_elem        ,
+                    const int start_col_elem      ,
+                    const int end_col_elem        ,
+                    const ghost_matrix * gmat_orig,
+                    ghost_matrix * gmat_copy      )
+{
+
+  /* Add 1 because the elements at 0 are included */
+  int col_length = end_col_elem-start_col_elem+1;
+  int row_length = end_row_elem-start_row_elem+1;
+  #ifdef _ERROR_CHECKING_ON_
+  if(gmat_copy == NULL){
+      fprintf(stderr,"ERROR gmat_copy is NULL in copyGhostMatrix\n");
+      return _return_error_val();
+  }
+  if(gmat_orig == NULL){
+      fprintf(stderr,"ERROR gmat_orig is NULL in copyGhostMatrix\n");
+      return _return_error_val();
+  }
+  #endif
+
+  int orig_rows = getRowsMatrix(gmat_orig->mat);
+  int orig_cols = getColsMatrix(gmat_orig->mat);
+
+  int copy_rows = getRowsMatrix(gmat_copy->mat);
+  int copy_cols = getColsMatrix(gmat_copy->mat);
+
+  #ifdef _ERROR_CHECKING_ON_
+	if(start_row_elem>end_row_elem){
+		fprintf(stderr,"ERROR start_row_elem is larger than end_row in "
+                   "copyGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(start_col_elem>end_col_elem){
+		fprintf(stderr,"ERROR start_col_elem larger than end_col in"
+                   "copyGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(start_row_elem<0){
+		fprintf(stderr,"ERROR start_row_elem is less than 0 in copyGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(end_row_elem>=orig_rows){
+		fprintf(stderr,"ERROR end_row_elem  extends past the row length of the "
+                   "original matrix in copyGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(row_length>copy_rows){
+		fprintf(stderr,"ERROR rows to be copied extend past the row length of "
+                   "gmat_copy in copyGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(start_col_elem<0){
+		fprintf(stderr,"ERROR start_col_elem  is less than 0 in copyGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(end_col_elem>=orig_cols){
+		fprintf(stderr,"ERROR end_col_elem  is larger than the column length of the"
+                   " original matrix in copyGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(col_length>copy_cols){
+		fprintf(stderr,"ERROR columns extend past the column length of mat_copy in "
+                   "copyGhostMatrix\n");
+		return _return_error_val();
+	}
+	#endif
+
+  _manipulateElements(start_row_elem,
+                      end_row_elem  ,
+                      start_col_elem,
+                      end_col_elem  ,
+                      gmat_orig     ,
+                      gmat_copy     ,
+                      &_Nothing     );
+
+	return 0;
+}
+
 
 //
 //float getElemCoreGhostMatrix(const ghost_matrix gmat,

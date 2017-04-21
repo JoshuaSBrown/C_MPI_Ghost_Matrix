@@ -251,13 +251,13 @@ float getElemGhostMatrix(const ghost_matrix * gmat, const int r, const int c);
  * start_col to end_col
  * to a separate matrix the values are placed in
  * the new matrix starting at row and col (0,0) */
-//int copy_matrix_elems(int start_row_elem   ,
-//                      int end_row_elem     ,
-//                      int start_col_elem   ,
-//                      int end_col_elem     ,
-//                      const_matrix mat_orig,
-//                      matrix * mat_copy    );
-//
+int copyGhostMatrix  (const int start_row_elem      ,
+                      const int end_row_elem        ,
+                      const int start_col_elem      ,
+                      const int end_col_elem        ,
+                      const ghost_matrix * gmat_orig,
+                      ghost_matrix * gmat_copy      );
+
 
 
 ///* Get an element from the core matrix this

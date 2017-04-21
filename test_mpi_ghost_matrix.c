@@ -313,6 +313,71 @@ int main(void){
 	rv = deleteGhostMatrix(&gmat);
 	assert(rv==0);
 	assert(gmat==NULL);
+
+	printf("Testing: getElemGhostMatrix\n");
+	gmat = newGhostMatrix(3,2);
+	float rvf = getElemGhostMatrix(NULL,1,1);
+	assert(rvf==-1.0);
+	rvf = getElemGhostMatrix(gmat,-1,0);
+	assert(rvf==-1.0);
+	rvf = getElemGhostMatrix(gmat,0,-1);
+	assert(rvf==-1.0);
+	rvf = getElemGhostMatrix(gmat,3,0);
+	assert(rvf==-1.0);
+	rvf = getElemGhostMatrix(gmat,0,2);
+	assert(rvf==-1.0);
+	rvf = getElemGhostMatrix(gmat,2,1);
+	assert(rvf==0.0);
+	rvf = getElemGhostMatrix(gmat,0,0);
+	assert(rvf==0.0);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+
+	printf("Testing: copyGhostMatrix\n");
+	gmat = newGhostMatrix(3,4);
+	rv = setAllGhostMatrix(gmat,1.1);
+	assert(rv==0);
+	for(int r=0;r<3;r++){
+			for(int c=0;c<4;c++){
+				rvf = getElemGhostMatrix(gmat,r,c);
+				float temp = 1.1;
+				assert(rvf==temp);
+			}
+	}
+	ghost_matrix * gmat2 = newGhostMatrix(3,4);
+	rv = copyGhostMatrix(0,2,0,3,gmat,gmat2);
+	assert(rv==0);
+	for(int r=0;r<3;r++){
+			for(int c=0;c<4;c++){
+				rvf = getElemGhostMatrix(gmat2,r,c);
+				float temp = 1.1;
+				assert(rvf==temp);
+			}
+	}
+	rv = copyGhostMatrix(-1,2,0,3,gmat,gmat2);
+	assert(rv==-1);
+	rv = copyGhostMatrix(2,1,0,3,gmat,gmat2);
+	assert(rv==-1);
+	rv = copyGhostMatrix(0,3,0,3,gmat,gmat2);
+	assert(rv==-1);
+	rv = copyGhostMatrix(0,2,-1,3,gmat,gmat2);
+	assert(rv==-1);
+	rv = copyGhostMatrix(0,2,0,4,gmat,gmat2);
+	assert(rv==-1);
+	rv = copyGhostMatrix(0,2,2,1,gmat,gmat2);
+	assert(rv==-1);
+	rv = copyGhostMatrix(0,2,0,3,NULL,gmat2);
+	assert(rv==-1);
+	rv = copyGhostMatrix(0,2,0,3,gmat,NULL);
+	assert(rv==-1);
+	rv = deleteGhostMatrix(&gmat);
+	assert(rv==0);
+	assert(gmat==NULL);
+	rv = deleteGhostMatrix(&gmat2);
+	assert(rv==0);
+	assert(gmat==NULL);
+
 //	printf("Testing: get_cols_core_matrix\n");
 //	rv = get_cols_core_matrix(NULL);
 //	assert(rv==-1);

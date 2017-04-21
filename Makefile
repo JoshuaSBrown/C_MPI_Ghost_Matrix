@@ -8,15 +8,15 @@
 # /**************************************/
 
 CC=gcc
-CFAGS=-Wall -Wextra -std=c99 -pedantic -g --save-temps
+CFLAGS=-Wall -Wextra -std=c99 -pedantic -g --save-temps
 
 ALL : test_mpi_ghost_matrix
 
 test_mpi_ghost_matrix : test_mpi_ghost_matrix.c mpi_ghost_matrix.o matrix.o
-	$(CC) $(CFLAGS)  -D _ERROR_CHECKING_ON_ -o test_mpi_ghost_matrix test_mpi_ghost_matrix.c mpi_ghost_matrix.o matrix.o -lm
+	$(CC) $(CFLAGS) -D _ERROR_CHECKING_ON_ -o test_mpi_ghost_matrix test_mpi_ghost_matrix.c mpi_ghost_matrix.o matrix.o -lm
 
 mpi_ghost_matrix.o : mpi_ghost_matrix.c matrix.o
-	$(CC) -c -D _ERROR_CHECKING_ON_ -std=c99 mpi_ghost_matrix.c matrix.o
+	$(CC) -c -std=c99 -D _ERROR_CHECKING_ON_ mpi_ghost_matrix.c matrix.o
 
 matrix.o : ../../C_Matrix/C_MATRIX/matrix.c
 	$(CC) -c -std=c99 -D _ERROR_CHECKING_ON_ ../../C_Matrix/C_MATRIX/matrix.c
@@ -56,4 +56,4 @@ matrix.o : ../../C_Matrix/C_MATRIX/matrix.c
 
 .PHONY : clean
 clean :
-	$(RM) *.o test_mpi_ghost_matrix
+	$(RM) *.o test_mpi_ghost_matrix vgcore*
