@@ -451,15 +451,113 @@ int main(void){
         ghost_matrix * gmat = newGhostMatrixCheckerboard(5,5,1,2,3,4);
         int rv = setAllGhostMatrix(gmat,1.0);
         assert(rv==0);
-      	float rvf = sumAllCoreMatrix(NULL);
-      	assert(rvf==-1.0);
-      	rvf = sumAllCoreMatrix(gmat);
+        float rvf = sumAllCoreMatrix(NULL);
+        assert(rvf==-1.0);
+        rvf = sumAllCoreMatrix(gmat);
         printf("rvf %f\n",rvf);
-      	assert((int)rvf==25);
+        assert((int)rvf==25);
         rv = deleteGhostMatrix(&gmat);
         assert(rv==0);
         assert(gmat==NULL);
     }
+
+    printf("Testing: setElemNorthGhostMatrix\n");
+    {
+        ghost_matrix * gmat = newGhostMatrixCheckerboard(2,2,1,0,0,0);
+        int rv = setElemNorthGhostMatrix(NULL,0,0,21.3);
+        assert(rv==-1);
+        rv = setElemNorthGhostMatrix(gmat,1,0,23.8);
+        assert(rv==-1);
+        rv = setElemNorthGhostMatrix(gmat,0,2,98);
+        assert(rv==-1);
+        rv = setElemNorthGhostMatrix(gmat,0,1,7);
+        assert(rv==0);
+        rv = setElemNorthGhostMatrix(gmat,-1,0,54);
+        assert(rv==-1);
+        rv = setElemNorthGhostMatrix(gmat,0,-1,42);
+        assert(rv==-1);
+        rv = setElemNorthGhostMatrix(gmat,0,0,84);
+        assert(rv==0);
+        rv = deleteGhostMatrix(&gmat);
+        assert(rv==0);
+        assert(gmat==NULL);
+    }
+
+    printf("Testing: getElemNorthGhostMatrix\n");
+    {
+        ghost_matrix * gmat = newGhostMatrixCheckerboard(2,2,1,0,0,0);
+        float rvf = getElemNorthGhostMatrix(NULL,0,0);
+        assert(rvf==-1.0);
+        rvf = getElemNorthGhostMatrix(gmat,-1,0);
+        assert(rvf==-1.0);
+        rvf = getElemNorthGhostMatrix(gmat,0,-1);
+        assert(rvf==-1.0);
+        rvf = getElemNorthGhostMatrix(gmat,1,0);
+        assert(rvf==-1);
+        rvf = getElemNorthGhostMatrix(gmat,0,2);
+        assert(rvf==-1.0);
+        int rv = setElemNorthGhostMatrix(gmat,0,1,7);
+        assert(rv==0);
+        rvf = getElemNorthGhostMatrix(gmat,0,1);
+        assert(rvf==7);
+        rv = setElemNorthGhostMatrix(gmat,0,0,84);
+        assert(rv==0);
+        rvf = getElemNorthGhostMatrix(gmat,0,0);
+        assert(rvf==84);
+        rv = deleteGhostMatrix(&gmat);
+        assert(rv==0);
+        assert(gmat==NULL);
+    }
+
+    printf("Testing: setElemSouthGhostMatrix\n");
+    {
+        ghost_matrix * gmat = newGhostMatrixCheckerboard(2,2,0,1,0,0);
+        int rv = setElemSouthGhostMatrix(NULL,0,0,21.3);
+        assert(rv==-1);
+        rv = setElemSouthGhostMatrix(gmat,1,0,23.8);
+        assert(rv==-1);
+        rv = setElemSouthGhostMatrix(gmat,0,2,98);
+        assert(rv==-1);
+        rv = setElemSouthGhostMatrix(gmat,0,0,7);
+        assert(rv==0);
+        rv = setElemSouthGhostMatrix(gmat,-1,0,54);
+        assert(rv==-1);
+        rv = setElemSouthGhostMatrix(gmat,0,-1,42);
+        assert(rv==-1);
+        rv = setElemSouthGhostMatrix(gmat,0,1,84);
+        assert(rv==0);
+        rv = deleteGhostMatrix(&gmat);
+        assert(rv==0);
+        assert(gmat==NULL);
+    }
+
+    printf("Testing: getElemSouthGhostMatrix\n");
+    {
+        ghost_matrix * gmat = newGhostMatrixCheckerboard(2,2,0,1,0,0);
+        float rvf = getElemSouthGhostMatrix(NULL,0,0);
+        assert(rvf==-1.0);
+        rvf = getElemSouthGhostMatrix(gmat,-1,0);
+        assert(rvf==-1.0);
+        rvf = getElemSouthGhostMatrix(gmat,0,-1);
+        assert(rvf==-1.0);
+        rvf = getElemSouthGhostMatrix(gmat,1,0);
+        assert(rvf==-1);
+        rvf = getElemSouthGhostMatrix(gmat,0,2);
+        assert(rvf==-1.0);
+        int rv = setElemSouthGhostMatrix(gmat,0,0,7);
+        assert(rv==0);
+        rvf = getElemSouthGhostMatrix(gmat,0,0);
+        assert(rvf==7);
+        rv = setElemSouthGhostMatrix(gmat,0,1,84);
+        assert(rv==0);
+        rvf = getElemSouthGhostMatrix(gmat,0,1);
+        assert(rvf==84);
+        rv = deleteGhostMatrix(&gmat);
+        assert(rv==0);
+        assert(gmat==NULL);
+    }
+
+
     //	printf("Testing: get_cols_core_matrix\n");
     //	rv = get_cols_core_matrix(NULL);
     //	assert(rv==-1);
@@ -489,80 +587,6 @@ int main(void){
     //
 
 
-
-    //
-    //	printf("Testing: set_elem_top_row_ghost_matrix\n");
-    //	rv = set_elem_top_row_ghost_matrix(NULL,0,0,21.3);
-    //	assert(rv==-1);
-    //	rv = set_elem_top_row_ghost_matrix(mat,1,0,23.8);
-    //	assert(rv==-1);
-    //	rv = set_elem_top_row_ghost_matrix(mat,0,2,98);
-    //	assert(rv==-1);
-    //	rv = set_elem_top_row_ghost_matrix(mat,0,1,7);
-    //	assert(rv==0);
-    //	rv = set_elem_top_row_ghost_matrix(mat,-1,0,54);
-    //	assert(rv==-1);
-    //	rv = set_elem_top_row_ghost_matrix(mat,0,-1,42);
-    //	assert(rv==-1);
-    //	rv = set_elem_top_row_ghost_matrix(mat,0,0,84);
-    //	assert(rv==0);
-    //
-    //	printf("Testing: get_elem_top_row_ghost_matrix\n");
-    //	rvf = get_elem_top_row_ghost_matrix(NULL,0,0);
-    //	assert(rvf==-1.0);
-    //	rvf = get_elem_top_row_ghost_matrix(mat,-1,0);
-    //	assert(rvf==-1.0);
-    //	rvf = get_elem_top_row_ghost_matrix(mat,0,-1);
-    //	assert(rvf==-1.0);
-    //	rvf = get_elem_top_row_ghost_matrix(mat,1,0);
-    //	assert(rvf==-1);
-    //	rvf = get_elem_top_row_ghost_matrix(mat,0,2);
-    //	assert(rvf==-1.0);
-    //	rvf = get_elem_top_row_ghost_matrix(mat,0,1);
-    //	assert(rvf==7);
-    //	rvf = get_elem_top_row_ghost_matrix(mat,0,0);
-    //	assert(rvf==84);
-    //
-    //	printf("Testing: set_elem_bottom_row_ghost_matrix\n");
-    //	rv = set_elem_bottom_row_ghost_matrix(NULL,0,0,21.3);
-    //	printf("1\n");
-    //	assert(rv==-1);
-    //	rv = set_elem_bottom_row_ghost_matrix(mat,1,0,23.8);
-    //	printf("2\n");
-    //	assert(rv==-1);
-    //	rv = set_elem_bottom_row_ghost_matrix(mat,0,2,98);
-    //	printf("3\n");
-    //	assert(rv==-1);
-    //	rv = set_elem_bottom_row_ghost_matrix(mat,0,0,7);
-//	printf("4\n");
-//	assert(rv==0);
-//	rv = set_elem_bottom_row_ghost_matrix(mat,-1,0,54);
-//	printf("5\n");
-//	assert(rv==-1);
-//	rv = set_elem_bottom_row_ghost_matrix(mat,0,-1,42);
-//	printf("6\n");
-//	assert(rv==-1);
-//	rv = set_elem_bottom_row_ghost_matrix(mat,0,1,84);
-//	printf("7\n");
-//	assert(rv==0);
-//
-//	printf("Testing: get_elem_bottom_row_ghost_matrix\n");
-//	rvf = get_elem_bottom_row_ghost_matrix(NULL,0,0);
-//	assert(rvf==-1.0);
-//	rvf = get_elem_bottom_row_ghost_matrix(mat,-1,0);
-//	assert(rvf==-1.0);
-//	rvf = get_elem_bottom_row_ghost_matrix(mat,0,-1);
-//	assert(rvf==-1.0);
-//	rvf = get_elem_bottom_row_ghost_matrix(mat,1,0);
-//	assert(rvf==-1);
-//	rvf = get_elem_bottom_row_ghost_matrix(mat,0,2);
-//	assert(rvf==-1.0);
-//	rvf = get_elem_bottom_row_ghost_matrix(mat,0,0);
-//	assert(rvf==7);
-//	rvf = get_elem_bottom_row_ghost_matrix(mat,0,1);
-//	assert(rvf==84);
-//	print_matrix(mat);
-//
 
 //	printf("Testing: within_core_matrix\n");
 //	print_matrix(mat);

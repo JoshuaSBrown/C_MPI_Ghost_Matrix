@@ -62,10 +62,10 @@
  * and end.                                                                   */
 struct _ghost_matrix {
   matrix * mat;
-  int   col_start;
-	int   col_end;
-	int   row_start;
-	int   row_end;
+  int col_start;
+	int col_end;
+	int row_start;
+	int row_end;
 };
 
 /******************************************************************************
@@ -875,159 +875,170 @@ float sumAllCoreMatrix(const ghost_matrix * gmat){
 	return sum;
 }
 
-//int set_elem_top_row_ghost_matrix(matrix mat, int row, int col, float val){
-//
-//	#ifdef _ERROR_CHECKING_ON_
-//	if(mat==NULL){
-//		fprintf(stderr,"ERROR mat is NULL in "
-//                       "set_val_top_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(row<0){
-//		fprintf(stderr,"ERROR row is less than 0 in "
-//                       "set_elem_top_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(col<0){
-//		fprintf(stderr,"ERROR col is less than 0 in "
-//                       "set_elem_top_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(mat->row_start==0){
-//		fprintf(stderr,"ERROR mat does not have a top ghost row in "
-//                       "set_elem_top_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(row>=mat->row_start){
-//		fprintf(stderr,"ERROR row is larger than the rows in the top"
-//                       " ghost matrix in get_elem_top_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(col>=mat->cols){
-//		fprintf(stderr,"ERROR col greater than cols in matrix "
-//                       "set_elem_top_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	#endif
-//	ELEM(mat,row,col) = val;
-//
-//	return 0;
-//}
-//
-//float get_elem_top_row_ghost_matrix(const_matrix mat, int row, int col){
-//
-//	#ifdef _ERROR_CHECKING_ON_
-//	if(mat==NULL){
-//		fprintf(stderr,"ERROR mat is NULL in "
-//                       "set_val_top_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(row<0){
-//		fprintf(stderr,"ERROR row is less than 0 in "
-//                       "get_elem_top_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(col<0){
-//		fprintf(stderr,"ERROR col is less than 0 in "
-//                       "get_elem_top_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(mat->row_start==0){
-//		fprintf(stderr,"ERROR mat does not have a top ghost row in "
-//                       "get_elem_top_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(row>=mat->row_start){
-//		fprintf(stderr,"ERROR row is larger than the rows in the top"
-//                       " ghost matrix in get_elem_top_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(col>=mat->cols){
-//		fprintf(stderr,"ERROR col greater than cols in matrix "
-//                       "get_elem_top_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	#endif
-//	return ELEM(mat,row,col);
-//}
-//
-//int set_elem_bottom_row_ghost_matrix(matrix mat, int row, int col, float val){
-//
-//	#ifdef _ERROR_CHECKING_ON_
-//	if(mat==NULL){
-//		fprintf(stderr,"ERROR mat is NULL in "
-//                       "set_val_bottom_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(row<0){
-//		fprintf(stderr,"ERROR row is less than 0 in "
-//                       "set_elem_bottom_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(col<0){
-//		fprintf(stderr,"ERROR col is less than 0 in "
-//                       "set_elem_bottom_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if((mat->rows-mat->row_end)==0){
-//		fprintf(stderr,"ERROR mat does not have a top ghost row in "
-//                       "set_elem_bottom_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(row>=(mat->rows-mat->row_end)){
-//		fprintf(stderr,"ERROR row is larger than the size of the "
-//                       "bottom ghost matrix in "
-//                       "set_elem_bottom_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(col>=mat->cols){
-//		fprintf(stderr,"ERROR col greater than cols in matrix "
-//                       "set_elem_bottom_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	#endif
-//	ELEM(mat,row+mat->row_end,col) = val;
-//
-//	return 0;
-//}
-//
-//float get_elem_bottom_row_ghost_matrix(const_matrix mat, int row, int col){
-//
-//	#ifdef _ERROR_CHECKING_ON_
-//	if(mat==NULL){
-//		fprintf(stderr,"ERROR mat is NULL in "
-//                       "get_val_bottom_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(row<0){
-//		fprintf(stderr,"ERROR row is less than 0 in "
-//                       "get_elem_bottom_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(col<0){
-//		fprintf(stderr,"ERROR col is less than 0 in "
-//                       "get_elem_bottom_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if((mat->rows-mat->row_end)==0){
-//		fprintf(stderr,"ERROR mat does not have a top ghost row in "
-//                       "get_elem_bottom_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(row>=(mat->rows-mat->row_end)){
-//		fprintf(stderr,"ERROR row is larger than the size of the "
-//                       "bottom ghost matrix in "
-//                       "get_elem_bottom_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	if(col>=mat->cols){
-//		fprintf(stderr,"ERROR col greater than cols in matrix "
-//                       "get_elem_bottom_row_ghost_matrix\n");
-//		return _return_error_val();
-//	}
-//	#endif
-//	return ELEM(mat,row+mat->row_end,col);
-//}
+int setElemNorthGhostMatrix(ghost_matrix * gmat,
+                            const int row      ,
+                            const int col      ,
+                            float val          ){
+
+	#ifdef _ERROR_CHECKING_ON_
+	if(gmat==NULL){
+		fprintf(stderr,"ERROR gmat is NULL in setElemNorthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(row<0){
+		fprintf(stderr,"ERROR row is less than 0 in setElemNorthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(col<0){
+		fprintf(stderr,"ERROR col is less than 0 in setElemNorthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(gmat->row_start==0){
+		fprintf(stderr,"ERROR mat does not have a top ghost row in "
+                       "setElemNorthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(row>=gmat->row_start){
+		fprintf(stderr,"ERROR row is larger than the rows in the top  ghost matrix "
+                   "in setElemNorthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(col>=getColsMatrix(gmat->mat)){
+		fprintf(stderr,"ERROR col greater than cols in matrix "
+                       "setElemNorthGhostMatrix\n");
+		return _return_error_val();
+	}
+	#endif
+
+  setElemMatrix(gmat->mat,row,col,val);
+
+	return 0;
+}
+
+float getElemNorthGhostMatrix(const ghost_matrix * gmat,
+                              const int row            ,
+                              const int col            ){
+
+  #ifdef _ERROR_CHECKING_ON_
+    if(gmat==NULL){
+		fprintf(stderr,"ERROR mat is NULL in "
+                       "getElemNorthGhostMatrix\n");
+		return (float)_return_error_val();
+	}
+	if(row<0){
+		fprintf(stderr,"ERROR row is less than 0 in "
+                       "getElemNorthGhostMatrix\n");
+		return (float)_return_error_val();
+	}
+	if(col<0){
+		fprintf(stderr,"ERROR col is less than 0 in "
+                       "getElemNorthGhostMatrix\n");
+		return (float)_return_error_val();
+	}
+	if(gmat->row_start==0){
+		fprintf(stderr,"ERROR mat does not have a top ghost row in "
+                       "getElemNorthGhostMatrix\n");
+		return (float)_return_error_val();
+	}
+	if(row>=gmat->row_start){
+		fprintf(stderr,"ERROR row is larger than the rows in the top"
+                       " ghost matrix in getElemNorthGhostMatrix\n");
+		return (float)_return_error_val();
+	}
+	if(col>=getColsMatrix(gmat->mat)){
+		fprintf(stderr,"ERROR col greater than cols in matrix "
+                       "getElemNorthGhostMatrix\n");
+		return (float)_return_error_val();
+	}
+	#endif
+
+  float val;
+  getElemMatrix(gmat->mat,row,col,&val);
+	return val;
+}
+
+int setElemSouthGhostMatrix(ghost_matrix * gmat,
+                            const int row,
+                            const int col, float val){
+
+	#ifdef _ERROR_CHECKING_ON_
+	if(gmat==NULL){
+		fprintf(stderr,"ERROR mat is NULL in "
+                       "setElemSouthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(row<0){
+		fprintf(stderr,"ERROR row is less than 0 in "
+                       "setElemSouthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(col<0){
+		fprintf(stderr,"ERROR col is less than 0 in "
+                       "setElemSouthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if((getRowsMatrix(gmat->mat)-gmat->row_end)==0){
+		fprintf(stderr,"ERROR mat does not have a top ghost row in "
+                       "setElemSouthGhostMatrix\n");
+	return _return_error_val();
+	}
+	if(row>=(getRowsMatrix(gmat->mat)-gmat->row_end)){
+		fprintf(stderr,"ERROR row is larger than the size of the "
+                       "bottom ghost matrix in "
+                       "setElemSouthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(col>=getColsMatrix(gmat->mat)){
+		fprintf(stderr,"ERROR col greater than cols in matrix "
+                       "setElemSouthGhostMatrix\n");
+		return _return_error_val();
+	}
+	#endif
+  setElemMatrix(gmat->mat,row+gmat->row_end,col,val);
+	return 0;
+}
+
+float getElemSouthGhostMatrix(const ghost_matrix * gmat,
+                              const int row,
+                              const int col){
+
+	#ifdef _ERROR_CHECKING_ON_
+	if(gmat==NULL){
+		fprintf(stderr,"ERROR mat is NULL in "
+                       "getElemSouthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(row<0){
+		fprintf(stderr,"ERROR row is less than 0 in "
+                       "getElemSouthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(col<0){
+		fprintf(stderr,"ERROR col is less than 0 in "
+                       "getElemSouthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if((getRowsMatrix(gmat->mat)-gmat->row_end)==0){
+		fprintf(stderr,"ERROR mat does not have a top ghost row in "
+                       "getElemSouthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(row>=(getRowsMatrix(gmat->mat)-gmat->row_end)){
+		fprintf(stderr,"ERROR row is larger than the size of the "
+                       "bottom ghost matrix in "
+                       "getElemSouthGhostMatrix\n");
+		return _return_error_val();
+	}
+	if(col>=getColsMatrix(gmat->mat)){
+		fprintf(stderr,"ERROR col greater than cols in matrix "
+                       "getElemSouthGhostMatrix\n");
+		return _return_error_val();
+	}
+	#endif
+  float val;
+  getElemMatrix(gmat->mat,row+gmat->row_end,col,&val);
+	return val;
+}
 //
 //int send_matrix(matrix mat){
 //

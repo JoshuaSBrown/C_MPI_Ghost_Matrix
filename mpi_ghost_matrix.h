@@ -263,29 +263,29 @@ float getElemCoreGhostMatrix(const ghost_matrix * gmat,
  * any value - if success should be the sum                                   */
 float sumAllCoreMatrix(const ghost_matrix * gmat);
 
-/* Find the total value of all of the elements in the core matrix and return  *
- * the value. Excludes elements in the ghost rows or columns.                 */
-//float getElemCoreGhostMatrix(const ghost_matrix * gmat,
-//                             const int row            ,
-//                             const int col            );
+/* Allows you to change an element in the top ghost row matrix. Here row and  *
+ * col refer to the rows and columns within the ghost matrix they do not refer*
+ * to the row and column of the global matrix                                 */
+int setElemNorthGhostMatrix(ghost_matrix * gmat,
+                            const int row      ,
+                            const int col      ,
+                            float val          );
 
-///* Allows you to change an element in the top
-// * ghost row matrix. Here row and col refer to
-// * the rows and columns within the ghost matrix
-// * they do not refer to the row and column of the
-// * global matrix                                 */
-//int set_elem_top_row_ghost_matrix(matrix mat, int row, int col, float val);
-//
-///* Grab the element in the top ghost matrix
-// * specified by row and col. Where row and col are
-// * not refering to the rows and columns in the
-// * global matrix.                                */
-//float get_elem_top_row_ghost_matrix(const_matrix mat, int row, int col);
-//
-//int set_elem_bottom_row_ghost_matrix(matrix mat, int row, int col, float val);
-//
-//float get_elem_bottom_row_ghost_matrix(const_matrix mat, int row, int col);
-//
+/* Grab the element in the top ghost matrix specified by row and col. Where   *
+ * row and col are not refering to the rows and columns in the global matrix. */
+float getElemNorthGhostMatrix(const ghost_matrix * gmat,
+                              const int row           ,
+                              const int col           );
+
+int setElemSouthGhostMatrix(ghost_matrix * gmat,
+                            const int row      ,
+                            const int col      ,
+                            float val          );
+
+float getElemSouthGhostMatrix(const ghost_matrix * gmat,
+                              const int row            ,
+                              const int col            );
+
 //int get_ghost_cols_left(const_matrix mat);
 //
 //int get_ghost_cols_right(const_matrix mat);
