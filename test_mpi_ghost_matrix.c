@@ -24,10 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-
-#ifdef _MPI_H_
-#include "mpi.h"
-#endif
+#include <mpi.h>
 #include "mpi_ghost_matrix.h"
 
 int main(void){
@@ -557,7 +554,34 @@ int main(void){
         assert(gmat==NULL);
     }
 
+    printf("Testing: sendGhostMatrix & recvGhostMatrix\n");
+    {
+        // Start MPI
+        MPI_Init(NULL,NULL);
+        int my_rank;
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
 
+        ghost_matrix * gmat = newGhostMatrixCheckerboard(2,2,0,1,0,0);
+        
+        if(my_rank==0){
+          setAllGhostMatrix(gmat,2.0);
+          float sum = sumAllCoreMatrix(gmat);
+          printf("rank %d sum %f\n",my_rank,sum);
+          sendGhostMatrix(gmat,1);
+          sum = sumAllCoreMatrix(gmat);
+          printf("rank %d sum %f\n",my_rank,sum);
+        }else if(my_rank==1){
+          float sum = sumAllCoreMatrix(gmat);
+          printf("rank %d sum %f\n",my_rank,sum);
+          recvGhostMatrix(gmat,0);
+          sum = sumAllCoreMatrix(gmat);
+          printf("rank %d sum %f\n",my_rank,sum);
+        }
+
+
+
+        MPI_Finalize();
+    }
     //	printf("Testing: get_cols_core_matrix\n");
     //	rv = get_cols_core_matrix(NULL);
     //	assert(rv==-1);

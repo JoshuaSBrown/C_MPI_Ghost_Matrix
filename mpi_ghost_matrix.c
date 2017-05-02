@@ -49,10 +49,7 @@
 
 #include "mpi_ghost_matrix.h"
 #include "../../C_Matrix/C_MATRIX/matrix.h"
-
-#ifdef _MPI_H_
 #include "mpi.h"
-#endif
 
 /* In this data structure we have piggy backed off of the previously defined  *
  * matrix libary and thus we have a pointer to the matrix data structure. The *
@@ -1039,121 +1036,123 @@ float getElemSouthGhostMatrix(const ghost_matrix * gmat,
   getElemMatrix(gmat->mat,row+gmat->row_end,col,&val);
 	return val;
 }
-//
-//int send_matrix(matrix mat){
-//
-//	#ifdef _MPI_H_
-//	MPI_Datatype Matrix_type;
-//	MPI_Aint start_address;
-//	MPI_Aint address;
-//
-//	MPI_Datatype type[7];
-//	type[0] = MPI_INT;
-//	type[1] = MPI_INT;
-//	type[2] = MPI_INT;
-//	type[3] = MPI_INT;
-//	type[4] = MPI_INT;
-//	type[5] = MPI_INT;
-//	type[6] = MPI_FLOAT;
-//
-//	MPI_Aint displacements[7];
-//	displacements[0] = 0;
-//
-//	MPI_Get_address(&(mat->rows),&start_address);
-//	MPI_Get_address(&(mat->cols),&address);
-//	displacements[1] = address-start_address;
-//	MPI_Get_address(&(mat->col_start),&address);
-//	displacements[2] = address-start_address;
-//	MPI_Get_address(&(mat->col_end),&address);
-//	displacements[3] = address-start_address;
-//	MPI_Get_address(&(mat->row_start),&address);
-//	displacements[4] = address-start_address;
-//	MPI_Get_address(&(mat->row_end),&address);
-//	displacements[5] = address-start_address;
-//	MPI_Get_address(&(mat->data),&address);
-//	displacements[6] = address-start_address;
-//
-//	int blocklen[7];
+
+/* Not I should not have to send the pointers to the data *
+ * this is because the matrix has already been created and*
+ * the pointers will point to different places in memory  *
+ * if they are located on different processors anyway.    */
+/* This will be difficult to do I need to send the wrapper 
+ * ghost matrix first followed by the actual matrix */
+int sendGhostMatrix(ghost_matrix * gmat, int dest){
+
+	MPI_Aint start_address;
+	MPI_Aint address;
+
+  // Sending Matrix type
+  MPI_Datatype type[1];
+//  type[0] = MPI_INT;    // rows
+//  type[1] = MPI_INT;    // cols
+  type[0] = MPI_FLOAT;  // data
+//  type[3] = MPI_INT;    // col_start
+//  type[4] = MPI_INT;    // col_end
+//  type[5] = MPI_INT;    // row_start
+//  type[6] = MPI_INT;    // row_end
+
+  MPI_Aint displacement[1];
+//  MPI_Get_address(getRowPtrMatrix(gmat->mat),&start_address); // rows
+  displacement[0] = 0;
+//  MPI_Get_address(getColPtrMatrix(gmat->mat),&address);       // cols
+//  displacement[1] = address-start_address;
+//  MPI_Get_address(getDataPtrMatrix(gmat->mat),&address);      // data
+//  displacement[2] = address-start_address;
+//  MPI_Get_address(&(gmat->col_start),&address);               // col_start
+//  displacement[3] = address-start_address;
+//  MPI_Get_address(&(gmat->col_end),&address);                 // col_end
+//  displacement[4] = address-start_address;
+//  MPI_Get_address(&(gmat->row_start),&address);               // row_start
+//  displacement[5] = address-start_address;
+//  MPI_Get_address(&(gmat->row_end),&address);                 // row_end
+//  displacement[6] = address-start_address;
+
+	int blocklen[1];
 //	blocklen[0] = 1;
 //	blocklen[1] = 1;
-//	blocklen[2] = 1;
+	blocklen[0] = getTotalElemsMatrix(gmat->mat);
 //	blocklen[3] = 1;
 //	blocklen[4] = 1;
 //	blocklen[5] = 1;
-//	blocklen[6] = get_total_elems(mat);
-//
-//	MPI_Type_create_struct(7, blocklen, displacements,type, &Matrix_type );
-//	MPI_Type_commit(&Matrix_type);
-//
-//	MPI_Send(&(mat->rows),1, Matrix_type,dest,0,MPI_COMM_WORLD);
-//
-//	MPI_Type_free(&Matrix_type);
-//	#endif
-//	return 0;
-//}
-//
-//int receive_matrix(matrix mat){
-//
-//	#ifdef _ERROR_CHECKING_ON_
-//	if(mat==NULL){
-//		fprintf(stderr,"ERROR receiving matrix to location that "
-//                       "is NULL. It would be advisable to create"
-//                       " a matrix in memory first, MPI can then "
-//                       "write to the location when it recieves "
-//                       "data structure..");
-//		return _return_error_val();
-//	}
-//	#endif
-//
-//	#ifdef _MPI_H_
-//	MPI_Datatype Matrix_type;
-//	MPI_Aint start_address;
-//	MPI_Aint address;
-//
-//	MPI_Datatype type[7];
-//	type[0] = MPI_INT;
-//	type[1] = MPI_INT;
-//	type[2] = MPI_INT;
-//	type[3] = MPI_INT;
-//	type[4] = MPI_INT;
-//	type[5] = MPI_INT;
-//	type[6] = MPI_FLOAT;
-//
-//	MPI_Aint displacements[7];
-//	displacements[0] = 0;
-//
-//	MPI_Get_address(&(mat->rows),&start_address);
-//	MPI_Get_address(&(mat->cols),&address);
-//	displacements[1] = address-start_address;
-//	MPI_Get_address(&(mat->col_start),&address);
-//	displacements[2] = address-start_address;
-//	MPI_Get_address(&(mat->col_end),&address);
-//	displacements[3] = address-start_address;
-//	MPI_Get_address(&(mat->row_start),&address);
-//	displacements[4] = address-start_address;
-//	MPI_Get_address(&(mat->row_end),&address);
-//	displacements[5] = address-start_address;
-//	MPI_Get_address(&(mat->data),&address);
-//	displacements[6] = address-start_address;
-//
-//	int blocklen[7];
+//	blocklen[6] = 1;
+  printf("Sending to destination %d\n",dest);
+	MPI_Datatype GhostMatrixType;
+	MPI_Type_create_struct(1, blocklen, displacement,type, &GhostMatrixType );
+	MPI_Type_commit(&GhostMatrixType);
+
+	MPI_Send(getDataPtrMatrix(gmat->mat),1, GhostMatrixType,dest,0,MPI_COMM_WORLD);
+
+	MPI_Type_free(&GhostMatrixType);
+	return 0;
+}
+
+int recvGhostMatrix(ghost_matrix * gmat,int source){
+
+	#ifdef _ERROR_CHECKING_ON_
+	if(gmat==NULL){
+		fprintf(stderr,"ERROR receiving matrix to location that "
+                       "is NULL. It would be advisable to create"
+                       " a matrix in memory first, MPI can then "
+                       "write to the location when it recieves "
+                       "data structure..");
+		return _return_error_val();
+	}
+	#endif
+  MPI_Status status;
+	
+  MPI_Aint start_address;
+	MPI_Aint address;
+
+	MPI_Datatype type[1];
+  type[0] = MPI_FLOAT;    // rows
+  //type[1] = MPI_INT;    // cols
+  //type[2] = MPI_FLOAT;  // data
+  //type[3] = MPI_INT;    // col_start
+  //type[4] = MPI_INT;    // col_end
+  //type[5] = MPI_INT;    // row_start
+  //type[6] = MPI_INT;    // row_end
+
+	MPI_Aint displacement[1];
+//  MPI_Get_address(getRowPtrMatrix(gmat->mat),&start_address); // rows
+  displacement[0] = 0;
+//  MPI_Get_address(getColPtrMatrix(gmat->mat),&address);       // cols
+//  displacement[1] = address-start_address;
+//  MPI_Get_address(getDataPtrMatrix(gmat->mat),&address);      // data
+//  displacement[2] = address-start_address;
+//  MPI_Get_address(&(gmat->col_start),&address);               // col_start
+//  displacement[3] = address-start_address;
+//  MPI_Get_address(&(gmat->col_end),&address);                 // col_end
+//  displacement[4] = address-start_address;
+//  MPI_Get_address(&(gmat->row_start),&address);               // row_start
+//  displacement[5] = address-start_address;
+//  MPI_Get_address(&(gmat->row_end),&address);                 // row_end
+//  displacement[6] = address-start_address;
+	
+  int blocklen[1];
 //	blocklen[0] = 1;
 //	blocklen[1] = 1;
-//	blocklen[2] = 1;
+	blocklen[0] = getTotalElemsMatrix(gmat->mat);
 //	blocklen[3] = 1;
 //	blocklen[4] = 1;
 //	blocklen[5] = 1;
-//	blocklen[6] = get_total_elems(mat);
-//
-//	MPI_Type_create_struct(7, blocklen, displacements,type, &Matrix_type );
-//	MPI_Type_commit(&Matrix_type);
-//
-//	MPI_Recv(&(mat->rows),1, Matrix_type,source,0,MPI_COMM_WORLD,&status);
-//
-//	MPI_Type_free(&Matrix_type);
-//	#endif
-//	return 0;
-//}
+//	blocklen[6] = 1;
+	MPI_Datatype GhostMatrixType;
+  printf("receiving from source %d\n",source);
+	MPI_Type_create_struct(1, blocklen, displacement,type, &GhostMatrixType );
+	MPI_Type_commit(&GhostMatrixType);
+
+	MPI_Recv(getDataPtrMatrix(gmat->mat),1, GhostMatrixType,source,0,MPI_COMM_WORLD,&status);
+
+	MPI_Type_free(&GhostMatrixType);
+	return 0;
+}
 //
 //
 ///* Will send the col from the core matrix and receive
