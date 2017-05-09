@@ -554,34 +554,78 @@ int main(void){
         assert(gmat==NULL);
     }
 
+    MPI_Init(NULL,NULL);
     printf("Testing: sendGhostMatrix & recvGhostMatrix\n");
     {
         // Start MPI
-        MPI_Init(NULL,NULL);
         int my_rank;
+        int num_proc;
         MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&num_proc);
 
-        ghost_matrix * gmat = newGhostMatrixCheckerboard(2,2,0,1,0,0);
-        
-        if(my_rank==0){
-          setAllGhostMatrix(gmat,2.0);
-          float sum = sumAllCoreMatrix(gmat);
-          printf("rank %d sum %f\n",my_rank,sum);
-          sendGhostMatrix(gmat,1);
-          sum = sumAllCoreMatrix(gmat);
-          printf("rank %d sum %f\n",my_rank,sum);
-        }else if(my_rank==1){
-          float sum = sumAllCoreMatrix(gmat);
-          printf("rank %d sum %f\n",my_rank,sum);
-          recvGhostMatrix(gmat,0);
-          sum = sumAllCoreMatrix(gmat);
-          printf("rank %d sum %f\n",my_rank,sum);
+        if(num_proc!=2){
+          fprintf(stderr,"ERROR incorrect amount of processors"
+              " to run test must use 2\n");
+        }else{
+          ghost_matrix * gmat = newGhostMatrixCheckerboard(2,2,0,1,0,0);
+
+          if(my_rank==0){
+            setAllGhostMatrix(gmat,2.0);
+            float sum = sumAllCoreMatrix(gmat);
+            printf("rank %d sum %f\n",my_rank,sum);
+            sendGhostMatrix(gmat,1);
+            sum = sumAllCoreMatrix(gmat);
+            printf("rank %d sum %f\n",my_rank,sum);
+          }else if(my_rank==1){
+            float sum = sumAllCoreMatrix(gmat);
+            printf("rank %d sum %f\n",my_rank,sum);
+            recvGhostMatrix(gmat,0);
+            sum = sumAllCoreMatrix(gmat);
+            printf("rank %d sum %f\n",my_rank,sum);
+          }
+          int rv = deleteGhostMatrix(&gmat);
+          assert(rv==0);
+          assert(gmat==NULL);
         }
-
-
-
-        MPI_Finalize();
     }
+
+    printf("Testing: updateNorthGhostRowsGhostMatrix\n");
+    {
+        // Start MPI
+        int my_rank;
+        int num_proc;
+        MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD,&num_proc);
+
+        if(num_proc!=2){
+          fprintf(stderr,"ERROR incorrect amount of processors"
+              " to run test must use 2\n");
+        }else{
+          ghost_matrix * gmat = newGhostMatrixCheckerboard(2,2,2,0,0,0);
+
+          if(my_rank==0){
+            setAllGhostMatrix(gmat,2.0);
+            updateNorthGhostRowsGhostMatrix(gmat,my_rank,0,1,1);
+          }else if(my_rank==1){
+            updateNorthGhostRowsGhostMatrix(gmat,my_rank,0,1,1);
+            printf("rank %d elem %f\n",my_rank,getElemGhostMatrix(gmat,0,0));
+            printf("rank %d elem %f\n",my_rank,getElemGhostMatrix(gmat,0,1));
+            printf("rank %d elem %f\n",my_rank,getElemGhostMatrix(gmat,1,0));
+            printf("rank %d elem %f\n",my_rank,getElemGhostMatrix(gmat,1,1));
+            printGhostMatrix(gmat);
+            assert(getElemGhostMatrix(gmat,0,0)==2.0);
+            assert(getElemGhostMatrix(gmat,0,1)==2.0);
+            assert(getElemGhostMatrix(gmat,1,0)==0.0);
+            assert(getElemGhostMatrix(gmat,1,1)==0.0);
+          }
+          int rv = deleteGhostMatrix(&gmat);
+          assert(rv==0);
+          assert(gmat==NULL);
+        }
+    }
+    MPI_Finalize();
+
+
     //	printf("Testing: get_cols_core_matrix\n");
     //	rv = get_cols_core_matrix(NULL);
     //	assert(rv==-1);

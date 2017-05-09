@@ -300,6 +300,14 @@ int sendGhostMatrix(ghost_matrix * gmat,int dest);
 /* Receive a matrix using a derived MPI datatype */
 int recvGhostMatrix(ghost_matrix * gmat,int source);
 
+/* Function updates the north ghost rows of the *
+ * ghost matrix given by dest */
+bool updateNorthGhostRowsGhostMatrix(ghost_matrix * gmat,
+                                     int my_rank        ,
+                                     int source         ,
+                                     int dest           ,
+                                     int nRows          );
+
 ///* Send and receive ghost columns through a
 // * derived MPI datatype. The total number of
 // * columns sent and received will depend on the

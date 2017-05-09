@@ -1049,39 +1049,40 @@ int sendGhostMatrix(ghost_matrix * gmat, int dest){
 	MPI_Aint address;
 
   // Sending Matrix type
-  MPI_Datatype type[1];
-//  type[0] = MPI_INT;    // rows
-//  type[1] = MPI_INT;    // cols
+  MPI_Datatype type[7];
   type[0] = MPI_FLOAT;  // data
-//  type[3] = MPI_INT;    // col_start
-//  type[4] = MPI_INT;    // col_end
-//  type[5] = MPI_INT;    // row_start
-//  type[6] = MPI_INT;    // row_end
+  type[1] = MPI_INT;    // rows
+  type[2] = MPI_INT;    // cols
+  type[3] = MPI_INT;    // col_start
+  type[4] = MPI_INT;    // col_end
+  type[5] = MPI_INT;    // row_start
+  type[6] = MPI_INT;    // row_end
 
-  MPI_Aint displacement[1];
-//  MPI_Get_address(getRowPtrMatrix(gmat->mat),&start_address); // rows
+  MPI_Aint displacement[7];
   displacement[0] = 0;
-//  MPI_Get_address(getColPtrMatrix(gmat->mat),&address);       // cols
-//  displacement[1] = address-start_address;
-//  MPI_Get_address(getDataPtrMatrix(gmat->mat),&address);      // data
-//  displacement[2] = address-start_address;
-//  MPI_Get_address(&(gmat->col_start),&address);               // col_start
-//  displacement[3] = address-start_address;
-//  MPI_Get_address(&(gmat->col_end),&address);                 // col_end
-//  displacement[4] = address-start_address;
-//  MPI_Get_address(&(gmat->row_start),&address);               // row_start
-//  displacement[5] = address-start_address;
-//  MPI_Get_address(&(gmat->row_end),&address);                 // row_end
-//  displacement[6] = address-start_address;
+  MPI_Get_address(getDataPtrMatrix(gmat->mat),&start_address);      // data
+  MPI_Get_address(getRowPtrMatrix(gmat->mat),&address); // rows
+  displacement[1] = address-start_address;
+  MPI_Get_address(getColPtrMatrix(gmat->mat),&address);       // cols
+  displacement[2] = address-start_address;
+  MPI_Get_address(&(gmat->col_start),&address);               // col_start
+  displacement[3] = address-start_address;
+  MPI_Get_address(&(gmat->col_end),&address);                 // col_end
+  displacement[4] = address-start_address;
+  MPI_Get_address(&(gmat->row_start),&address);               // row_start
+  displacement[5] = address-start_address;
+  MPI_Get_address(&(gmat->row_end),&address);                 // row_end
+  displacement[6] = address-start_address;
 
-	int blocklen[1];
-//	blocklen[0] = 1;
-//	blocklen[1] = 1;
+	int blocklen[7];
 	blocklen[0] = getTotalElemsMatrix(gmat->mat);
-//	blocklen[3] = 1;
-//	blocklen[4] = 1;
-//	blocklen[5] = 1;
-//	blocklen[6] = 1;
+	blocklen[1] = 1;
+	blocklen[2] = 1;
+	blocklen[3] = 1;
+	blocklen[4] = 1;
+	blocklen[5] = 1;
+	blocklen[6] = 1;
+
   printf("Sending to destination %d\n",dest);
 	MPI_Datatype GhostMatrixType;
 	MPI_Type_create_struct(1, blocklen, displacement,type, &GhostMatrixType );
@@ -1105,44 +1106,50 @@ int recvGhostMatrix(ghost_matrix * gmat,int source){
 		return _return_error_val();
 	}
 	#endif
+
+  //Create a temporary variable to ensure that the data received is
+  //the same size as the data sent
+  int totalElems = getTotalElemsMatrix(gmat->mat);  
+
   MPI_Status status;
 	
   MPI_Aint start_address;
 	MPI_Aint address;
 
-	MPI_Datatype type[1];
-  type[0] = MPI_FLOAT;    // rows
-  //type[1] = MPI_INT;    // cols
-  //type[2] = MPI_FLOAT;  // data
-  //type[3] = MPI_INT;    // col_start
-  //type[4] = MPI_INT;    // col_end
-  //type[5] = MPI_INT;    // row_start
-  //type[6] = MPI_INT;    // row_end
+	MPI_Datatype type[7];
+  type[0] = MPI_FLOAT;  // data
+  type[1] = MPI_INT;    // rows
+  type[2] = MPI_INT;    // cols
+  type[3] = MPI_INT;    // col_start
+  type[4] = MPI_INT;    // col_end
+  type[5] = MPI_INT;    // row_start
+  type[6] = MPI_INT;    // row_end
 
-	MPI_Aint displacement[1];
-//  MPI_Get_address(getRowPtrMatrix(gmat->mat),&start_address); // rows
+	MPI_Aint displacement[7];
   displacement[0] = 0;
-//  MPI_Get_address(getColPtrMatrix(gmat->mat),&address);       // cols
-//  displacement[1] = address-start_address;
-//  MPI_Get_address(getDataPtrMatrix(gmat->mat),&address);      // data
-//  displacement[2] = address-start_address;
-//  MPI_Get_address(&(gmat->col_start),&address);               // col_start
-//  displacement[3] = address-start_address;
-//  MPI_Get_address(&(gmat->col_end),&address);                 // col_end
-//  displacement[4] = address-start_address;
-//  MPI_Get_address(&(gmat->row_start),&address);               // row_start
-//  displacement[5] = address-start_address;
-//  MPI_Get_address(&(gmat->row_end),&address);                 // row_end
-//  displacement[6] = address-start_address;
+  MPI_Get_address(getDataPtrMatrix(gmat->mat),&start_address);      // data
+  MPI_Get_address(getRowPtrMatrix(gmat->mat),&address); // rows
+  displacement[1] = address-start_address;
+  MPI_Get_address(getColPtrMatrix(gmat->mat),&address);       // cols
+  displacement[2] = address-start_address;
+  MPI_Get_address(&(gmat->col_start),&address);               // col_start
+  displacement[3] = address-start_address;
+  MPI_Get_address(&(gmat->col_end),&address);                 // col_end
+  displacement[4] = address-start_address;
+  MPI_Get_address(&(gmat->row_start),&address);               // row_start
+  displacement[5] = address-start_address;
+  MPI_Get_address(&(gmat->row_end),&address);                 // row_end
+  displacement[6] = address-start_address;
 	
   int blocklen[1];
-//	blocklen[0] = 1;
-//	blocklen[1] = 1;
 	blocklen[0] = getTotalElemsMatrix(gmat->mat);
-//	blocklen[3] = 1;
-//	blocklen[4] = 1;
-//	blocklen[5] = 1;
-//	blocklen[6] = 1;
+	blocklen[1] = 1;
+	blocklen[2] = 1;
+  blocklen[3] = 1;
+	blocklen[4] = 1;
+	blocklen[5] = 1;
+	blocklen[6] = 1;
+
 	MPI_Datatype GhostMatrixType;
   printf("receiving from source %d\n",source);
 	MPI_Type_create_struct(1, blocklen, displacement,type, &GhostMatrixType );
@@ -1151,14 +1158,157 @@ int recvGhostMatrix(ghost_matrix * gmat,int source){
 	MPI_Recv(getDataPtrMatrix(gmat->mat),1, GhostMatrixType,source,0,MPI_COMM_WORLD,&status);
 
 	MPI_Type_free(&GhostMatrixType);
+
+	#ifdef _ERROR_CHECKING_ON_
+  //Create a temporary variable to ensure that the data received is
+  if(getTotalElemsMatrix(gmat->mat)!=totalElems){
+    fprintf(stderr,"ERROR the ghost matrix received is not the same"
+                   " size as the buffer\n");
+		return _return_error_val();
+  }
+	#endif
+
+
 	return 0;
 }
+
+
+/* This function works by updating the north ghost row by taking the 
+ * bottom rows of the core part of the matrix above it */
+bool updateNorthGhostRowsGhostMatrix(ghost_matrix * gmat,
+                                     int my_rank        ,
+                                     int source         ,
+                                     int dest           ,
+                                     int nRows          ){
+
+
+  if(my_rank==source){ 
+
+    // Determine if there are enough rows in the core matrix to send
+	  #ifdef _ERROR_CHECKING_ON_
+    if(nRows>getRowsMatrix(gmat->mat)){
+      fprintf(stderr,"ERROR there are not enough rows in "
+                     "the core of gmat to send nRows in "
+                     "updateNorthGhostRowsGhosstMatrix\n");
+      return (bool) _return_error_val();
+    }
+    #endif
+    // Step 1 determine the number of ghost rows at the north part of
+    // the matrix
+    int coreCols = _getColsCore(gmat);
+    int totalCols = getColsMatrix(gmat->mat);
+    // Declare a Ghost Row type
+    MPI_Datatype ghostRow;
+    // Create the vector type 
+    printf("my_rank %d coreCols %d totalCols %d\n",my_rank,coreCols,totalCols);
+    MPI_Type_vector(1,coreCols,totalCols,MPI_FLOAT,&ghostRow); 
+    MPI_Type_commit(&ghostRow);
+
+    // Need the address of the starting data element
+    float * buffer = getDataPtrElemMatrix(gmat->mat,
+        gmat->row_start+_getRowsCore(gmat)-1,
+        gmat->col_start);
+    printf("my_rank %d row %d col %d\n",my_rank,gmat->row_start+_getRowsCore(gmat)-1, gmat->col_start);
+    MPI_Send(buffer,
+        nRows,
+        ghostRow,
+        dest,
+        0,
+        MPI_COMM_WORLD);
+
+	  MPI_Type_free(&ghostRow);
+
+  }else if(my_rank==dest){
+
+	  #ifdef _ERROR_CHECKING_ON_
+    if(nRows>getRowsNorthGhostMatrix(gmat)){
+      fprintf(stderr,"ERROR there are not enough rows in "
+                     "the core of gmat to send nRows in "
+                     "updateNorthGhostRowsGhosstMatrix\n");
+      return (bool) _return_error_val();
+    }
+    #endif
+  
+    MPI_Status status;
+    // Step 1 determine the number of ghost rows at the north part of
+    // the matrix
+    int coreCols = _getColsCore(gmat);
+    int totalCols = getColsMatrix(gmat->mat);
+    // Declare a Ghost Row type
+    MPI_Datatype ghostRow;
+    // Create the vector type 
+    printf("my_rank %d coreCols %d totalCols %d\n",my_rank,coreCols,totalCols);
+    MPI_Type_vector(1,coreCols,totalCols,MPI_FLOAT,&ghostRow); 
+    MPI_Type_commit(&ghostRow);
+
+    // Need the address of the starting data element
+    float * buffer = getDataPtrElemMatrix(gmat->mat,
+                                 0,
+                                 gmat->col_start);
+
+    printf("my_rank %d row start %d col start %d\n",my_rank,0,gmat->col_start);
+    MPI_Recv(buffer,
+             nRows,
+             ghostRow,
+             source,
+             0,
+             MPI_COMM_WORLD,
+             &status);
+
+	  MPI_Type_free(&ghostRow);
+
+  }
+  return true;   
+}
+
+
+/* This function works by updating the north ghost row by taking the 
+ * rows from the matrix above it */
+//bool updateSouthGhostRowsGhostMatrix(ghost_matrix * gmat,
+//                                     int source         ,
+//                                     int dest           ){
 //
+//  
+//  return true;   
+//}
+
+
+/* This function works by updating the north ghost row by taking the 
+ * rows from the matrix above it */
+//bool updateEastGhostColsGhostMatrix(ghost_matrix * gmat,
+//                                     int source         ,
+//                                     int dest           ){
 //
-///* Will send the col from the core matrix and receive
-// * the col to the ghost col, if running checker this
-// * function should be called before the send and receive
-// * ghost row function */
+//  
+//  return true;   
+//}
+
+/* This function works by updating the north ghost row by taking the 
+ * rows from the matrix above it */
+//bool updateWestGhostColsGhostMatrix(ghost_matrix * gmat,
+//                                     int source         ,
+//                                     int dest           ){
+//
+//  return true;   
+//}
+
+//bool updateGhostColsRowsGhostMatrix(ghost_matrix * gmat){
+
+//}
+
+
+
+
+/* This function will work by sending and receiving between the two
+ * specified ranks */
+//bool sendRecvGhostMatrix(ghost_matrix * gmat, int source, int dest){
+
+
+//}
+/* Will send the col from the core matrix and receive
+ * the col to the ghost col, if running checker this
+ * function should be called before the send and receive
+ * ghost row function */
 //bool send_recv_ghost_cols(matrix * new_mat){
 //
 //
