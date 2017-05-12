@@ -46,10 +46,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
+#ifdef _MPI_GHOST_MATRIX_PLUGIN_
+#include <mpi.h>
+#endif
 #include "mpi_ghost_matrix.h"
 #include "../../C_Matrix/C_MATRIX/matrix.h"
-#include "mpi.h"
 
 /* In this data structure we have piggy backed off of the previously defined  *
  * matrix libary and thus we have a pointer to the matrix data structure. The *
@@ -1043,6 +1044,7 @@ float getElemSouthGhostMatrix(const ghost_matrix * gmat,
  * if they are located on different processors anyway.    */
 /* This will be difficult to do I need to send the wrapper 
  * ghost matrix first followed by the actual matrix */
+#ifdef _MPI_GHOST_MATRIX_PLUGIN_
 int sendGhostMatrix(ghost_matrix * gmat, int dest){
 
 	#ifdef _ERROR_CHECKING_ON_
@@ -1358,7 +1360,7 @@ bool updateSouthGhostRowsGhostMatrix(ghost_matrix * gmat,
    
   return true;   
 }
-
+#endif
 
 /* This function works by updating the north ghost row by taking the 
  * rows from the matrix above it */

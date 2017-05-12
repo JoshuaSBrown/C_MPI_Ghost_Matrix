@@ -294,6 +294,7 @@ float getElemSouthGhostMatrix(const ghost_matrix * gmat,
 //
 //int get_ghost_rows_below(const_matrix mat);
 
+#ifdef _MPI_GHOST_MATRIX_PLUGIN_
 /* Send a matrix using a derived MPI datatype    */
 int sendGhostMatrix(ghost_matrix * gmat,int dest);
 
@@ -352,7 +353,7 @@ bool updateSouthGhostRowsGhostMatrix(ghost_matrix * gmat,
                                      int source         ,
                                      int dest           ,
                                      int nRows          );
-
+#endif
 ///* Send and receive ghost columns through a
 // * derived MPI datatype. The total number of
 // * columns sent and received will depend on the

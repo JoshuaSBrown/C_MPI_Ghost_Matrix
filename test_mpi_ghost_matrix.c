@@ -24,10 +24,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#ifdef _MPI_GHOST_MATRIX_PLUGIN_
 #include <mpi.h>
+#endif
 #include "mpi_ghost_matrix.h"
 
 int main(void){
+
 
     printf("Testing: newGhostMatrix\n");
     {
@@ -128,7 +131,7 @@ int main(void){
         assert(gmat==NULL);
     }
 
-    /* Testing Setters                                                            */
+    // Testing Setters  
     printf("Testing: setElemGhostMatrix\n");
     {
         ghost_matrix * gmat = newGhostMatrixRowPanel(3, 2, 1, 1);
@@ -182,7 +185,7 @@ int main(void){
         assert(rv==0);
         assert(gmat==NULL);
     }
-    /* Getters                                                                    */
+    // Getters  
     printf("Testing: getRowStartGhostMatrix\n");
     {
         ghost_matrix * gmat = newGhostMatrixCheckerboard(3,4,1,1,1,1);
@@ -530,33 +533,35 @@ int main(void){
 
     printf("Testing: getElemSouthGhostMatrix\n");
     {
-        ghost_matrix * gmat = newGhostMatrixCheckerboard(2,2,0,1,0,0);
-        float rvf = getElemSouthGhostMatrix(NULL,0,0);
-        assert(rvf==-1.0);
-        rvf = getElemSouthGhostMatrix(gmat,-1,0);
-        assert(rvf==-1.0);
-        rvf = getElemSouthGhostMatrix(gmat,0,-1);
-        assert(rvf==-1.0);
-        rvf = getElemSouthGhostMatrix(gmat,1,0);
-        assert(rvf==-1);
-        rvf = getElemSouthGhostMatrix(gmat,0,2);
-        assert(rvf==-1.0);
-        int rv = setElemSouthGhostMatrix(gmat,0,0,7);
-        assert(rv==0);
-        rvf = getElemSouthGhostMatrix(gmat,0,0);
-        assert(rvf==7);
-        rv = setElemSouthGhostMatrix(gmat,0,1,84);
-        assert(rv==0);
-        rvf = getElemSouthGhostMatrix(gmat,0,1);
-        assert(rvf==84);
-        rv = deleteGhostMatrix(&gmat);
-        assert(rv==0);
-        assert(gmat==NULL);
+      ghost_matrix * gmat = newGhostMatrixCheckerboard(2,2,0,1,0,0);
+      float rvf = getElemSouthGhostMatrix(NULL,0,0);
+      assert(rvf==-1.0);
+      rvf = getElemSouthGhostMatrix(gmat,-1,0);
+      assert(rvf==-1.0);
+      rvf = getElemSouthGhostMatrix(gmat,0,-1);
+      assert(rvf==-1.0);
+      rvf = getElemSouthGhostMatrix(gmat,1,0);
+      assert(rvf==-1);
+      rvf = getElemSouthGhostMatrix(gmat,0,2);
+      assert(rvf==-1.0);
+      int rv = setElemSouthGhostMatrix(gmat,0,0,7);
+      assert(rv==0);
+      rvf = getElemSouthGhostMatrix(gmat,0,0);
+      assert(rvf==7);
+      rv = setElemSouthGhostMatrix(gmat,0,1,84);
+      assert(rv==0);
+      rvf = getElemSouthGhostMatrix(gmat,0,1);
+      assert(rvf==84);
+      rv = deleteGhostMatrix(&gmat);
+      assert(rv==0);
+      assert(gmat==NULL);
     }
 
-    MPI_Init(NULL,NULL);
-    printf("Testing: sendGhostMatrix & recvGhostMatrix\n");
+    #ifdef _MPI_GHOST_MATRIX_PLUGIN_
     {
+      MPI_Init(NULL,NULL);
+      printf("Testing: sendGhostMatrix & recvGhostMatrix\n");
+      {
         // Start MPI
         int my_rank;
         int num_proc;
@@ -587,10 +592,10 @@ int main(void){
           assert(rv==0);
           assert(gmat==NULL);
         }
-    }
+      }
 
-    printf("Testing: updateNorthGhostRowsGhostMatrix\n");
-    {
+      printf("Testing: updateNorthGhostRowsGhostMatrix\n");
+      {
         // Start MPI
         int my_rank;
         int num_proc;
@@ -643,10 +648,10 @@ int main(void){
           assert(rv==0);
           assert(gmat==NULL);
         }
-    }
-    
-    printf("Testing: updateSouthGhostRowsGhostMatrix\n");
-    {
+      }
+
+      printf("Testing: updateSouthGhostRowsGhostMatrix\n");
+      {
         // Start MPI
         int my_rank;
         int num_proc;
@@ -700,11 +705,10 @@ int main(void){
           assert(rv==0);
           assert(gmat==NULL);
         }
+      }
+      MPI_Finalize();
     }
-
-    MPI_Finalize();
-
-
+    #endif
     //	printf("Testing: get_cols_core_matrix\n");
     //	rv = get_cols_core_matrix(NULL);
     //	assert(rv==-1);
