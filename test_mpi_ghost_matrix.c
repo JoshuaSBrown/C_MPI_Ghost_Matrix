@@ -602,23 +602,44 @@ int main(void){
               " to run test must use 2\n");
         }else{
           ghost_matrix * gmat = newGhostMatrixCheckerboard(2,2,2,0,0,0);
+          ghost_matrix * gmat2 = newGhostMatrixCheckerboard(2,2,2,0,2,0);
 
           if(my_rank==0){
             setAllGhostMatrix(gmat,2.0);
             updateNorthGhostRowsGhostMatrix(gmat,my_rank,0,1,1);
+            setAllGhostMatrix(gmat,3.0);
+            setElemGhostMatrix(gmat,3,0,-1.0);
+            updateNorthGhostRowsGhostMatrix(gmat,my_rank,0,1,2);
+            setAllGhostMatrix(gmat2,4.5);
+            updateNorthGhostRowsGhostMatrix(gmat2,my_rank,0,1,2);
           }else if(my_rank==1){
             updateNorthGhostRowsGhostMatrix(gmat,my_rank,0,1,1);
-            printf("rank %d elem %f\n",my_rank,getElemGhostMatrix(gmat,0,0));
-            printf("rank %d elem %f\n",my_rank,getElemGhostMatrix(gmat,0,1));
-            printf("rank %d elem %f\n",my_rank,getElemGhostMatrix(gmat,1,0));
-            printf("rank %d elem %f\n",my_rank,getElemGhostMatrix(gmat,1,1));
-            printGhostMatrix(gmat);
-            assert(getElemGhostMatrix(gmat,0,0)==2.0);
-            assert(getElemGhostMatrix(gmat,0,1)==2.0);
-            assert(getElemGhostMatrix(gmat,1,0)==0.0);
-            assert(getElemGhostMatrix(gmat,1,1)==0.0);
+            // Should fill up the row closest to the core matrix first
+            assert(getElemGhostMatrix(gmat,1,0)==2.0);
+            assert(getElemGhostMatrix(gmat,1,1)==2.0);
+            assert(getElemGhostMatrix(gmat,0,0)==0.0);
+            assert(getElemGhostMatrix(gmat,0,1)==0.0);
+            // Testing with 2 rows 
+            updateNorthGhostRowsGhostMatrix(gmat,my_rank,0,1,2);
+            assert(getElemGhostMatrix(gmat,1,0)==-1.0);
+            assert(getElemGhostMatrix(gmat,1,1)==3.0);
+            assert(getElemGhostMatrix(gmat,0,0)==3.0);
+            assert(getElemGhostMatrix(gmat,0,1)==3.0);
+            // Test when ghost columns are also present
+            updateNorthGhostRowsGhostMatrix(gmat2,my_rank,0,1,2);
+            assert(getElemGhostMatrix(gmat2,1,2)==0.0);
+            assert(getElemGhostMatrix(gmat2,1,3)==0.0);
+            assert(getElemGhostMatrix(gmat2,0,2)==0.0);
+            assert(getElemGhostMatrix(gmat2,0,3)==0.0);
+            assert(getElemGhostMatrix(gmat2,1,0)==4.5);
+            assert(getElemGhostMatrix(gmat2,1,1)==4.5);
+            assert(getElemGhostMatrix(gmat2,0,0)==4.5);
+            assert(getElemGhostMatrix(gmat2,0,1)==4.5);
           }
           int rv = deleteGhostMatrix(&gmat);
+          assert(rv==0);
+          assert(gmat==NULL);
+          rv = deleteGhostMatrix(&gmat2);
           assert(rv==0);
           assert(gmat==NULL);
         }
