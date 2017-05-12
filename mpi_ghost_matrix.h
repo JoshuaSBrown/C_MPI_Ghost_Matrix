@@ -301,8 +301,53 @@ int sendGhostMatrix(ghost_matrix * gmat,int dest);
 int recvGhostMatrix(ghost_matrix * gmat,int source);
 
 /* Function updates the north ghost rows of the *
- * ghost matrix given by dest */
+ * ghost matrix given by dest e.g.              *
+ * 
+ * Source Before
+ * 
+ * B B B B   0 0 0 0 
+ * C C C C   0 0 0 0 
+ * C C C C   0 0 0 0
+ * C C C C   4 4 4 4
+ * C C C C   3 3 3 3 --+ 
+ * B B B B   5 5 5 5   | 
+ *                     |
+ * Destination Before  v
+ *                     |
+ * B B B B   1 1 1 1 <-+
+ * C C C C   2 2 2 2 
+ * C C C C   6 6 6 6
+ * C C C C   0 0 0 0
+ * C C C C   0 0 0 0 
+ * B B B B   0 0 0 0 
+ * 
+ * Source After
+ * 
+ * B B B B   0 0 0 0 
+ * C C C C   0 0 0 0 
+ * C C C C   0 0 0 0
+ * C C C C   4 4 4 4
+ * C C C C   3 3 3 3 
+ * B B B B   5 5 5 5 
+ *
+ * Destination After
+ * 
+ * B B B B   3 3 3 3 
+ * C C C C   2 2 2 2 
+ * C C C C   6 6 6 6
+ * C C C C   0 0 0 0
+ * C C C C   0 0 0 0 
+ * B B B B   0 0 0 0 
+ * 
+ */
 bool updateNorthGhostRowsGhostMatrix(ghost_matrix * gmat,
+                                     int my_rank        ,
+                                     int source         ,
+                                     int dest           ,
+                                     int nRows          );
+
+
+bool updateSouthGhostRowsGhostMatrix(ghost_matrix * gmat,
                                      int my_rank        ,
                                      int source         ,
                                      int dest           ,
