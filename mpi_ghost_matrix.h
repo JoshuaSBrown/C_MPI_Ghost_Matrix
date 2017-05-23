@@ -353,6 +353,18 @@ bool updateSouthGhostRowsGhostMatrix(ghost_matrix * gmat,
                                      int source         ,
                                      int dest           ,
                                      int nRows          );
+
+bool updateEastGhostColsGhostMatrix(ghost_matrix * gmat,
+                                     int my_rank        ,
+                                     int source         ,
+                                     int dest           ,
+                                     int nCols          );
+
+bool updateWestGhostColsGhostMatrix(ghost_matrix * gmat,
+                                     int my_rank        ,
+                                     int source         ,
+                                     int dest           ,
+                                     int nCols          );
 #endif
 ///* Send and receive ghost columns through a
 // * derived MPI datatype. The total number of

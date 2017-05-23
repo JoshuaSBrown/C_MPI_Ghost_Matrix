@@ -1,0 +1,1 @@
+mpicc -std=c99 -D _ERROR_CHECKING_ON_ -D _MPI_GHOST_MATRIX_PLUGIN_ -c mpi_ghost_matrix.c

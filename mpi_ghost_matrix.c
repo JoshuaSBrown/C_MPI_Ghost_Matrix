@@ -1220,7 +1220,7 @@ bool updateNorthGhostRowsGhostMatrix(ghost_matrix * gmat,
     float * buffer = getDataPtrElemMatrix(gmat->mat,
         gmat->row_start+_getRowsCore(gmat)-nRows,
         gmat->col_start);
-    MPI_Send(buffer,
+    MPI_Send((void *)buffer,
         1,
         ghostRow,
         dest,
@@ -1291,7 +1291,7 @@ bool updateSouthGhostRowsGhostMatrix(ghost_matrix * gmat,
       return (bool) _return_error_val();
     }
     #endif
-    // Step 1 determine the number of ghost rows at the north part of
+    // Step 1 determine the number of ghost rows at the south part of
     // the matrix
     int coreCols = _getColsCore(gmat);
     int totalCols = getColsMatrix(gmat->mat);
@@ -1340,9 +1340,7 @@ bool updateSouthGhostRowsGhostMatrix(ghost_matrix * gmat,
     MPI_Type_commit(&ghostRow);
 
     // Need the address of the starting data element
-    float * buffer = getDataPtrElemMatrix(gmat->mat,
-                                 gmat->row_start+_getRowsCore(gmat),
-                                 gmat->col_start);
+    float * buffer = getDataPtrElemMatrix(gmat->mat,gmat->row_start+_getRowsCore(gmat),gmat->col_start);
 
     printf("my_rank %d row start %d col start %d\n",my_rank,gmat->row_start+_getRowsCore(gmat),gmat->col_start);
     MPI_Recv(buffer,
@@ -1356,31 +1354,189 @@ bool updateSouthGhostRowsGhostMatrix(ghost_matrix * gmat,
 	  MPI_Type_free(&ghostRow);
 
   }
-
    
   return true;   
 }
+
+/* This function works by updating the north ghost row by taking the 
+ * rows from the matrix above it */
+bool updateEastGhostColsGhostMatrix(ghost_matrix * gmat,
+                                     int my_rank        ,
+                                     int source         ,
+                                     int dest           ,
+                                     int nCols          ){
+
+  if(my_rank==source){ 
+  // Determine if there are enough cols in the core matrix to send
+	  #ifdef _ERROR_CHECKING_ON_
+    if(nCols>getColsMatrix(gmat->mat)){
+      fprintf(stderr,"ERROR there are not enough cols in "
+                     "the core of gmat to send nCols in "
+                     "updateEastGhostColsGhostMatrix\n");
+      return (bool) _return_error_val();
+    }
+    #endif
+   
+    // Step 1 determine the number of ghost cols at the east part of
+    // the matrix
+    int coreRows = _getRowsCore(gmat);
+    int totalRows = getRowsMatrix(gmat->mat);
+    int totalCols = getColsMatrix(gmat->mat);
+    // Declare a Ghost Column type
+    MPI_Datatype ghostCol;
+    // Create the vector type 
+    printf("my_rank %d coreRows %d totalRows %d\n",my_rank,coreRows,totalRows);
+    MPI_Type_vector(totalRows,nCols,totalCols,MPI_FLOAT,&ghostCol); 
+    MPI_Type_commit(&ghostCol);
+
+    // Need the address of the starting data element, includes
+    // mostly core elements but will also include ghost row elements
+    // that extend above the core matrix.
+    float * buffer = getDataPtrElemMatrix(gmat->mat,0,gmat->col_start);
+    printf("my_rank %d row %d col %d\n",my_rank,0, gmat->col_start);
+    MPI_Send(buffer,
+        1,
+        ghostCol,
+        dest,
+        0,
+        MPI_COMM_WORLD);
+
+	  MPI_Type_free(&ghostCol);
+
+
+  }else if(my_rank==dest){
+  // Determine if there are enough cols in the core matrix to send
+	  #ifdef _ERROR_CHECKING_ON_
+    if(nCols>getColsEastGhostMatrix(gmat)){
+      fprintf(stderr,"ERROR there are not enough cols in "
+                     "the core of gmat to send nCols in "
+                     "updateEastGhostColsGhostMatrix\n");
+      return (bool) _return_error_val();
+    }
+    #endif
+
+    MPI_Status status;
+    // Step 1 determine the number of ghost Rows at the east part of
+    // the matrix
+    int coreRows = _getRowsCore(gmat);
+    int totalRows = getRowsMatrix(gmat->mat);
+    int totalCols = getColsMatrix(gmat->mat);
+    // Declare a Ghost Column type
+    MPI_Datatype ghostCol;
+    // Create the vector type 
+    printf("my_rank %d coreRows %d totalRows %d\n",my_rank,coreRows,totalRows);
+    MPI_Type_vector(totalRows,nCols,totalCols,MPI_FLOAT,&ghostCol); 
+    MPI_Type_commit(&ghostCol);
+
+    // Need the address of the starting data element
+    float * buffer = getDataPtrElemMatrix(gmat->mat,0,gmat->col_start+_getColsCore(gmat));
+
+    printf("my_rank %d row start %d col start %d\n",my_rank,0,gmat->col_start+_getColsCore(gmat));
+    MPI_Recv((void *)buffer,
+             1,
+             ghostCol,
+             source,
+             0,
+             MPI_COMM_WORLD,
+             &status);
+
+	  MPI_Type_free(&ghostCol);
+
+
+  }
+  return true;   
+}
+
+/* This function works by updating the north ghost row by taking the 
+ * rows from the matrix above it */
+bool updateWestGhostColsGhostMatrix(ghost_matrix * gmat,
+                                     int my_rank       ,
+                                     int source        ,
+                                     int dest          ,
+                                     int nCols         ){
+
+  if(my_rank==source){ 
+  // Determine if there are enough cols in the core matrix to send
+	  #ifdef _ERROR_CHECKING_ON_
+    if(nCols>getColsMatrix(gmat->mat)){
+      fprintf(stderr,"ERROR there are not enough cols in "
+                     "the core of gmat to send nCols in "
+                     "updateWestGhostColsGhostMatrix\n");
+      return (bool) _return_error_val();
+    }
+    #endif
+   
+    // Step 1 determine the number of ghost cols at the east part of
+    // the matrix
+    int coreRows = _getRowsCore(gmat);
+    int totalRows = getRowsMatrix(gmat->mat);
+    int totalCols = getColsMatrix(gmat->mat);
+    // Declare a Ghost Column type
+    MPI_Datatype ghostCol;
+    // Create the vector type 
+    printf("my_rank %d coreRows %d totalRows %d\n",my_rank,coreRows,totalRows);
+    MPI_Type_vector(totalRows,nCols,totalCols,MPI_FLOAT,&ghostCol); 
+    MPI_Type_commit(&ghostCol);
+
+    // Need the address of the starting data element, includes
+    // mostly core elements but will also include ghost row elements
+    // that extend above the core matrix.
+    float * buffer = getDataPtrElemMatrix(gmat->mat,0,gmat->col_start+_getColsCore(gmat)-nCols);
+    printf("my_rank %d row %d col %d\n",my_rank,0,gmat->col_start+_getColsCore(gmat)-nCols);
+    MPI_Send(buffer,
+        1,
+        ghostCol,
+        dest,
+        0,
+        MPI_COMM_WORLD);
+
+	  MPI_Type_free(&ghostCol);
+
+
+  }else if(my_rank==dest){
+  // Determine if there are enough cols in the core matrix to send
+	  #ifdef _ERROR_CHECKING_ON_
+    if(nCols>getColsWestGhostMatrix(gmat)){
+      fprintf(stderr,"ERROR there are not enough cols in "
+                     "the core of gmat to send nCols in "
+                     "updateWestGhostColsGhostMatrix\n");
+      return (bool) _return_error_val();
+    }
+    #endif
+
+    MPI_Status status;
+    // Step 1 determine the number of ghost Rows at the east part of
+    // the matrix
+    int coreRows = _getRowsCore(gmat);
+    int totalRows = getRowsMatrix(gmat->mat);
+    int totalCols = getColsMatrix(gmat->mat);
+    // Declare a Ghost Column type
+    MPI_Datatype ghostCol;
+    // Create the vector type 
+    printf("my_rank %d coreRows %d totalRows %d\n",my_rank,coreRows,totalRows);
+    MPI_Type_vector(totalRows,nCols,totalCols,MPI_FLOAT,&ghostCol); 
+    MPI_Type_commit(&ghostCol);
+
+    // Need the address of the starting data element
+    float * buffer = getDataPtrElemMatrix(gmat->mat,0,gmat->col_start-nCols);
+
+    printf("my_rank %d row start %d col start %d\n",my_rank,0,gmat->col_start-nCols);
+    MPI_Recv((void *)buffer,
+             1,
+             ghostCol,
+             source,
+             0,
+             MPI_COMM_WORLD,
+             &status);
+
+	  MPI_Type_free(&ghostCol);
+
+  }
+
+  return true;   
+}
+
 #endif
-
-/* This function works by updating the north ghost row by taking the 
- * rows from the matrix above it */
-//bool updateEastGhostColsGhostMatrix(ghost_matrix * gmat,
-//                                     int source         ,
-//                                     int dest           ){
-//
-//  
-//  return true;   
-//}
-
-/* This function works by updating the north ghost row by taking the 
- * rows from the matrix above it */
-//bool updateWestGhostColsGhostMatrix(ghost_matrix * gmat,
-//                                     int source         ,
-//                                     int dest           ){
-//
-//  return true;   
-//}
-
 //bool updateGhostColsRowsGhostMatrix(ghost_matrix * gmat){
 
 //}
